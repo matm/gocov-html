@@ -15,5 +15,7 @@ Just type the following to install the package and its dependencies::
 Usage
 -----
 
+First generate coverage data with axw's `gocov`, then use it with `gocov-html`::
+
     $ gocov test pkg > coverage.json
     $ gocov-html coverage.json
