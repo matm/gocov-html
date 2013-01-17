@@ -5,7 +5,15 @@ This is a simple helper tool for generating HTML output from `axw/gocov`_.
 
 .. _axw/gocov: https://github.com/axw/gocov
 
-Usage::
+Installation
+------------
+
+Just type the following to install the package and its dependencies::
+
+    $ go get github.com/matm/gocov-html
+
+Usage
+-----
 
     $ gocov test pkg > coverage.json
     $ gocov-html coverage.json
