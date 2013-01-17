@@ -21,16 +21,16 @@
 package cov
 
 import (
-	"flag"
-	"fmt"
-	"github.com/axw/gocov"
-	"io"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"sort"
-	"text/tabwriter"
     "encoding/json"
+    "flag"
+    "fmt"
+    "github.com/axw/gocov"
+    "io"
+    "io/ioutil"
+    "os"
+    "path/filepath"
+    "sort"
+    "text/tabwriter"
 )
 
 const (
@@ -87,131 +87,131 @@ func unmarshalJson(data []byte) (packages []*gocov.Package, err error) {
 }
 
 type report struct {
-	packages []*gocov.Package
+    packages []*gocov.Package
 }
 
 type reportFunction struct {
-	*gocov.Function
-	statementsReached int
+    *gocov.Function
+    statementsReached int
 }
 
 type reportFunctionList []reportFunction
 
 func (l reportFunctionList) Len() int {
-	return len(l)
+    return len(l)
 }
 
 // TODO make sort method configurable?
 func (l reportFunctionList) Less(i, j int) bool {
-	var left, right float64
-	if len(l[i].Statements) > 0 {
-		left = float64(l[i].statementsReached) / float64(len(l[i].Statements))
-	}
-	if len(l[j].Statements) > 0 {
-		right = float64(l[j].statementsReached) / float64(len(l[j].Statements))
-	}
-	if left < right {
-		return true
-	}
-	return left == right && len(l[i].Statements) < len(l[j].Statements)
+    var left, right float64
+    if len(l[i].Statements) > 0 {
+        left = float64(l[i].statementsReached) / float64(len(l[i].Statements))
+    }
+    if len(l[j].Statements) > 0 {
+        right = float64(l[j].statementsReached) / float64(len(l[j].Statements))
+    }
+    if left < right {
+        return true
+    }
+    return left == right && len(l[i].Statements) < len(l[j].Statements)
 }
 
 func (l reportFunctionList) Swap(i, j int) {
-	l[i], l[j] = l[j], l[i]
+    l[i], l[j] = l[j], l[i]
 }
 
 type reverse struct {
-	sort.Interface
+    sort.Interface
 }
 
 func (r reverse) Less(i, j int) bool {
-	return r.Interface.Less(j, i)
+    return r.Interface.Less(j, i)
 }
 
 // NewReport creates a new report.
 func newReport() (r *report) {
-	r = &report{}
-	return
+    r = &report{}
+    return
 }
 
 // AddPackage adds a package's coverage information to the report.
 func (r *report) addPackage(p *gocov.Package) {
-	i := sort.Search(len(r.packages), func(i int) bool {
-		return r.packages[i].Name >= p.Name
-	})
-	if i < len(r.packages) && r.packages[i].Name == p.Name {
-		r.packages[i].Accumulate(p)
-	} else {
-		head := r.packages[:i]
-		tail := append([]*gocov.Package{p}, r.packages[i:]...)
-		r.packages = append(head, tail...)
-	}
+    i := sort.Search(len(r.packages), func(i int) bool {
+        return r.packages[i].Name >= p.Name
+    })
+    if i < len(r.packages) && r.packages[i].Name == p.Name {
+        r.packages[i].Accumulate(p)
+    } else {
+        head := r.packages[:i]
+        tail := append([]*gocov.Package{p}, r.packages[i:]...)
+        r.packages = append(head, tail...)
+    }
 }
 
 // Clear clears the coverage information from the report.
 func (r *report) clear() {
-	r.packages = nil
+    r.packages = nil
 }
 
 // PrintReport prints a coverage report to the given writer.
 func printReport(w io.Writer, r *report) {
-	w = tabwriter.NewWriter(w, 0, 8, 0, '\t', 0)
-	for _, pkg := range r.packages {
-		printPackage(w, pkg)
-		fmt.Fprintln(w)
-	}
+    w = tabwriter.NewWriter(w, 0, 8, 0, '\t', 0)
+    for _, pkg := range r.packages {
+        printPackage(w, pkg)
+        fmt.Fprintln(w)
+    }
 }
 
 func printPackage(w io.Writer, pkg *gocov.Package) {
-	functions := make(reportFunctionList, len(pkg.Functions))
-	for i, fn := range pkg.Functions {
-		reached := 0
-		for _, stmt := range fn.Statements {
-			if stmt.Reached > 0 {
-				reached++
-			}
-		}
-		functions[i] = reportFunction{fn, reached}
-	}
-	sort.Sort(reverse{functions})
+    functions := make(reportFunctionList, len(pkg.Functions))
+    for i, fn := range pkg.Functions {
+        reached := 0
+        for _, stmt := range fn.Statements {
+            if stmt.Reached > 0 {
+                reached++
+            }
+        }
+        functions[i] = reportFunction{fn, reached}
+    }
+    sort.Sort(reverse{functions})
 
-	var longestFunctionName int
-	var totalStatements, totalReached int
+    var longestFunctionName int
+    var totalStatements, totalReached int
 
     fmt.Fprintf(w, htmlHeader)
     fmt.Fprintf(w, "<div class=\"package\">%s</div>\n", pkg.Name)
     fmt.Fprintf(w, "<div id=\"totalcov\">%s</div>\n", pkg.Name)
     fmt.Fprintf(w, "<table>\n")
-	for _, fn := range functions {
-		reached := fn.statementsReached
-		totalStatements += len(fn.Statements)
-		totalReached += reached
-		var stmtPercent float64 = 0
-		if len(fn.Statements) > 0 {
-			stmtPercent = float64(reached) / float64(len(fn.Statements)) * 100
-		}
-		if len(fn.Name) > longestFunctionName {
-			longestFunctionName = len(fn.Name)
-		}
-		fmt.Fprintf(w, "<tr><td>%s/%s</td><td class=\"fn\"><code>%s(...)</code></td><td class=\"percent\">%.2f%%</td><td class=\"linecount\">%d/%d</td></tr>\n",
-			pkg.Name, filepath.Base(fn.File), fn.Name, stmtPercent,
-			reached, len(fn.Statements))
-	}
+    for _, fn := range functions {
+        reached := fn.statementsReached
+        totalStatements += len(fn.Statements)
+        totalReached += reached
+        var stmtPercent float64 = 0
+        if len(fn.Statements) > 0 {
+            stmtPercent = float64(reached) / float64(len(fn.Statements)) * 100
+        }
+        if len(fn.Name) > longestFunctionName {
+            longestFunctionName = len(fn.Name)
+        }
+        fmt.Fprintf(w, "<tr><td>%s/%s</td><td class=\"fn\"><code>%s(...)</code></td><td class=\"percent\">%.2f%%</td><td class=\"linecount\">%d/%d</td></tr>\n",
+            pkg.Name, filepath.Base(fn.File), fn.Name, stmtPercent,
+            reached, len(fn.Statements))
+    }
 
-	var funcPercent float64
-	if totalStatements > 0 {
-		funcPercent = float64(totalReached) / float64(totalStatements) * 100
-	}
-	fmt.Fprintf(w, "<tr><td>%s</td><td></td><td class=\"percent\">%.2f%%</td><td class=\"linecount\">%d/%d</td></tr>\n",
-		pkg.Name, funcPercent,
-		totalReached, totalStatements)
+    var funcPercent float64
+    if totalStatements > 0 {
+        funcPercent = float64(totalReached) / float64(totalStatements) * 100
+    }
+    fmt.Fprintf(w, "<tr><td>%s</td><td></td><td class=\"percent\">%.2f%%</td><td class=\"linecount\">%d/%d</td></tr>\n",
+        pkg.Name, funcPercent,
+        totalReached, totalStatements)
     fmt.Fprintf(w, "</table>\n")
     fmt.Fprintf(w, "<script type=\"text/javascript\">\ndocument.getElementById(\"totalcov\").textContent = \"%.2f%%\"\n</script>", funcPercent)
     fmt.Fprintf(w, htmlFooter)
 }
 
 func HTMLReportCoverage() (rc int) {
-	report := newReport()
+    report := newReport()
     data, err := ioutil.ReadFile(flag.Arg(0))
     if err != nil {
         fmt.Fprintf(os.Stderr, "failed to read coverage file: %s\n", err)
@@ -226,7 +226,7 @@ func HTMLReportCoverage() (rc int) {
     for _, pkg := range packages {
         report.addPackage(pkg)
     }
-	fmt.Println()
-	printReport(os.Stdout, report)
-	return 0
+    fmt.Println()
+    printReport(os.Stdout, report)
+    return 0
 }

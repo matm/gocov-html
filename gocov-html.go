@@ -24,8 +24,8 @@ import (
     "flag"
     "fmt"
     "github.com/matm/gocov-html/cov"
-//    "io/ioutil"
- //   "log"
+    //    "io/ioutil"
+    //   "log"
     "os"
 )
 
