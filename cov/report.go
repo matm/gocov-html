@@ -33,50 +33,6 @@ import (
     "text/tabwriter"
 )
 
-const (
-    htmlHeader = `<html>
-    <head>
-        <title>Coverage</title>
-        <!-- FIXME: Embedded style sheet -->
-        <style type="text/css">
-            body { background-color: black; }
-            table {
-                margin-left: auto;
-                margin-right: auto;
-            }
-            td { 
-                background-color: #ccc; 
-                padding: 5px;
-            }
-            td.percent, td.linecount { text-align: right; }
-            div.package, #totalcov { 
-                position: fixed;
-                color: brown;
-                background-color: white; 
-                float: left; 
-                font-size: 30px;
-                font-weight: bold;
-                padding: 10px;
-            }
-            #totalcov { 
-                top: 60px;
-                clear: both;
-                margin-top: 10px;
-                color: green;
-            }
-            table tr:last-child td {
-                font-weight: bold;
-                color: brown;
-            }
-        </style>
-    </head>
-    <body>
-    `
-    htmlFooter = `
-    </body>
-</html>`
-)
-
 func unmarshalJson(data []byte) (packages []*gocov.Package, err error) {
     result := &struct{ Packages []*gocov.Package }{}
     err = json.Unmarshal(data, result)
@@ -193,8 +149,8 @@ func printPackage(w io.Writer, pkg *gocov.Package) {
         if len(fn.Name) > longestFunctionName {
             longestFunctionName = len(fn.Name)
         }
-        fmt.Fprintf(w, "<tr><td>%s/%s</td><td class=\"fn\"><code>%s(...)</code></td><td class=\"percent\">%.2f%%</td><td class=\"linecount\">%d/%d</td></tr>\n",
-            pkg.Name, filepath.Base(fn.File), fn.Name, stmtPercent,
+        fmt.Fprintf(w, "<tr id=\"s_fn_%s\"><td>%s/%s</td><td class=\"fn\"><code><a href=\"#fn_%s\">%s(...)</a></code></td><td class=\"percent\">%.2f%%</td><td class=\"linecount\">%d/%d</td></tr>\n",
+            fn.Name, pkg.Name, filepath.Base(fn.File), fn.Name, fn.Name, stmtPercent,
             reached, len(fn.Statements))
     }
 
@@ -206,6 +162,12 @@ func printPackage(w io.Writer, pkg *gocov.Package) {
         pkg.Name, funcPercent,
         totalReached, totalStatements)
     fmt.Fprintf(w, "</table>\n")
+
+    // Embbed function source code
+    for _, fn := range functions {
+        annotateFunctionSource(w, fn.Function)
+    }
+
     fmt.Fprintf(w, "<script type=\"text/javascript\">\ndocument.getElementById(\"totalcov\").textContent = \"%.2f%%\"\n</script>", funcPercent)
     fmt.Fprintf(w, htmlFooter)
 }
