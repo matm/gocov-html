@@ -95,6 +95,12 @@ const (
             table.listing tr:last-child td:first-child {
                 font-weight: bold;
             }
+            .info {
+                margin-left: 140px;
+            }
+            .info code {
+                font-weight: bold;
+            }
         </style>
     </head>
     <body>
