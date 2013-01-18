@@ -31,6 +31,7 @@ import (
     "path/filepath"
     "sort"
     "text/tabwriter"
+    "time"
 )
 
 func unmarshalJson(data []byte) (packages []*gocov.Package, err error) {
@@ -135,6 +136,8 @@ func printPackage(w io.Writer, pkg *gocov.Package) {
     var totalStatements, totalReached int
 
     fmt.Fprintf(w, htmlHeader)
+    fmt.Fprintf(w, "<div id=\"about\">Generated on<br/> %s<br/>with <a href=\"%s\">gocov-html</a></div>",
+        time.Now().Format(time.RFC822Z), ProjectUrl)
     fmt.Fprintf(w, "<div class=\"package\">%s</div>\n", pkg.Name)
     fmt.Fprintf(w, "<div id=\"totalcov\">%s</div>\n", pkg.Name)
     fmt.Fprintf(w, "<table>\n")
