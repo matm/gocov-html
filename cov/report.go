@@ -172,6 +172,8 @@ func printPackage(w io.Writer, pkg *gocov.Package) {
     }
 
     fmt.Fprintf(w, "<script type=\"text/javascript\">\ndocument.getElementById(\"totalcov\").textContent = \"%.2f%%\"\n</script>", funcPercent)
+    fmt.Fprintf(w, "\n<!-- Can be parsed by external script\nPACKAGE:%s DONE:%.2f\n-->\n", 
+        pkg.Name, funcPercent)
     fmt.Fprintf(w, htmlFooter)
 }
 
