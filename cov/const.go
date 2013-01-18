@@ -21,9 +21,10 @@
 package cov
 
 const (
+    ProjectUrl = "https://github.com/matm/gocov-html"
     htmlHeader = `<html>
     <head>
-        <title>Coverage</title>
+        <title>Coverage Report</title>
         <!-- FIXME: Embedded style sheet -->
         <style type="text/css">
             body { background-color: #fff; }
@@ -36,21 +37,38 @@ const (
                 padding: 5px;
             }
             td.percent, td.linecount { text-align: right; }
-            div.package, #totalcov { 
+            div.package, #totalcov, #doctitle { 
                 position: fixed;
                 color: brown;
-                background-color: #ccc; 
-                float: right; 
-                right: 10px;
-                font-size: 30px;
+                background-color: #eee; 
+                font-size: 24px;
                 font-weight: bold;
                 padding: 10px;
             }
+            div.package, #totalcov { 
+                float: right; 
+                right: 10px;
+            }
             #totalcov { 
                 top: 60px;
-                clear: both;
                 margin-top: 10px;
                 color: green;
+                clear: both;
+            }
+            #doctitle { 
+                float: left;
+                left: 10px;
+                font-size: 20px;
+                margin-top: 10px;
+                color: black;
+                text-align: center;
+            }
+            #about {
+                position: fixed;
+                float: left;
+                top: 90px;
+                left: 10px;
+                font-size: 10px;
             }
             table tr:last-child td {
                 font-weight: bold;
@@ -104,6 +122,7 @@ const (
         </style>
     </head>
     <body>
+        <div id="doctitle">Coverage<br/>Report</div>
     `
 
     htmlFooter = `
