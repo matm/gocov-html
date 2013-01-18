@@ -92,6 +92,9 @@ const (
                 font-weight: normal;
                 color: #000;
             }
+            table.listing tr:last-child td:first-child {
+                font-weight: bold;
+            }
         </style>
     </head>
     <body>
