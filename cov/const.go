@@ -104,7 +104,7 @@ const (
                 font-weight: bold;
             }
             table.listing tr.miss td {
-                background-color: #FF8E89; 
+                background-color: #FFBBB8;
             }
             table.listing tr:last-child td {
                 font-weight: normal;
