@@ -19,4 +19,4 @@ Usage
 First generate coverage data with axw's `gocov`, then use it with `gocov-html`::
 
     $ gocov test pkg > coverage.json
-    $ gocov-html coverage.json
+    $ gocov-html coverage.json > pkg.html
