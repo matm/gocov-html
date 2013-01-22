@@ -22,7 +22,6 @@ package cov
 
 import (
     "encoding/json"
-    "flag"
     "fmt"
     "github.com/axw/gocov"
     "io"
@@ -177,23 +176,22 @@ func printPackage(w io.Writer, pkg *gocov.Package) {
     fmt.Fprintf(w, htmlFooter)
 }
 
-func HTMLReportCoverage() (rc int) {
+func HTMLReportCoverage(r io.Reader) error {
     report := newReport()
-    data, err := ioutil.ReadFile(flag.Arg(0))
+    data, err := ioutil.ReadAll(r)
     if err != nil {
-        fmt.Fprintf(os.Stderr, "failed to read coverage file: %s\n", err)
-        return 1
+        return fmt.Errorf("failed to read coverage data: %s\n", err)
     }
+
     packages, err := unmarshalJson(data)
     if err != nil {
-        fmt.Fprintf(
-            os.Stderr, "failed to unmarshal coverage data: %s\n", err)
-        return 1
+        return fmt.Errorf("failed to unmarshal coverage data: %s\n", err)
     }
+
     for _, pkg := range packages {
         report.addPackage(pkg)
     }
     fmt.Println()
     printReport(os.Stdout, report)
-    return 0
+    return nil
 }
