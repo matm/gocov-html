@@ -1,15 +1,15 @@
 // Copyright (c) 2012 The Gocov Authors.
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
 // deal in the Software without restriction, including without limitation the
 // rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 // sell copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -68,6 +68,7 @@ func (a *annotator) printFunctionSource(w io.Writer, fn *gocov.Function) error {
     if err != nil {
         return err
     }
+
     if setContent {
         // This processes the content and records line number info.
         file.SetLinesForContent(data)
@@ -76,7 +77,7 @@ func (a *annotator) printFunctionSource(w io.Writer, fn *gocov.Function) error {
     statements := fn.Statements[:]
     lineno := file.Line(file.Pos(fn.Start))
     lines := strings.Split(string(data)[fn.Start:fn.End], "\n")
-    fmt.Println()
+    fmt.Fprintln(w)
     fmt.Fprintf(w, "<div class=\"funcname\" id=\"fn_%s\">%s</div>", fn.Name, fn.Name)
     fmt.Fprintf(w, "<div class=\"info\"><a href=\"#s_fn_%s\">Back</a><p>In <code>%s</code>:</p></div>",
         fn.Name, fn.File)
@@ -105,7 +106,7 @@ func (a *annotator) printFunctionSource(w io.Writer, fn *gocov.Function) error {
         } else {
             tr += ">"
         }
-        fmt.Fprintf(w, "%s<td>%d</td><td><pre>%s</pre></td></tr>", tr, lineno, line)
+        fmt.Fprintf(w, "%s<td>%d</td><td><pre>%s</pre></td></tr>", tr, lineno, strings.Replace(line, "\t", "        ", -1)) //TODO make the number of spaces an argument of printFunctionSource
     }
     fmt.Fprintln(w, "</table>")
 
