@@ -21,8 +21,8 @@
 package cov
 
 const (
-    ProjectUrl = "https://github.com/matm/gocov-html"
-    htmlHeader = `<html>
+	ProjectUrl = "https://github.com/matm/gocov-html"
+	htmlHeader = `<html>
     <head>
         <title>Coverage Report</title>
         <!-- FIXME: Embedded style sheet -->
@@ -125,7 +125,7 @@ const (
         <div id="doctitle">Coverage<br/>Report</div>
     `
 
-    htmlFooter = `
+	htmlFooter = `
     </body>
 </html>`
 )
