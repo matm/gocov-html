@@ -68,6 +68,7 @@ func (a *annotator) printFunctionSource(w io.Writer, fn *gocov.Function) error {
 	if err != nil {
 		return err
 	}
+
 	if setContent {
 		// This processes the content and records line number info.
 		file.SetLinesForContent(data)
@@ -76,7 +77,7 @@ func (a *annotator) printFunctionSource(w io.Writer, fn *gocov.Function) error {
 	statements := fn.Statements[:]
 	lineno := file.Line(file.Pos(fn.Start))
 	lines := strings.Split(string(data)[fn.Start:fn.End], "\n")
-	fmt.Println()
+	fmt.Fprintln(w)
 	fmt.Fprintf(w, "<div class=\"funcname\" id=\"fn_%s\">%s</div>", fn.Name, fn.Name)
 	fmt.Fprintf(w, "<div class=\"info\"><a href=\"#s_fn_%s\">Back</a><p>In <code>%s</code>:</p></div>",
 		fn.Name, fn.File)
@@ -105,7 +106,7 @@ func (a *annotator) printFunctionSource(w io.Writer, fn *gocov.Function) error {
 		} else {
 			tr += ">"
 		}
-		fmt.Fprintf(w, "%s<td>%d</td><td><pre>%s</pre></td></tr>", tr, lineno, line)
+		fmt.Fprintf(w, "%s<td>%d</td><td><pre>%s</pre></td></tr>", tr, lineno, strings.Replace(line, "\t", "        ", -1)) //TODO make the number of spaces an argument of printFunctionSource
 	}
 	fmt.Fprintln(w, "</table>")
 

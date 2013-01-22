@@ -37,7 +37,7 @@ func main() {
 		r = os.Stdin
 	case 1:
 		var err error
-		if r, err = os.Open(flag.Arg(1)); err != nil {
+		if r, err = os.Open(flag.Arg(0)); err != nil {
 			log.Fatal(err)
 		}
 
