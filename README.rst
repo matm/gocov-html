@@ -5,6 +5,8 @@ This is a simple helper tool for generating HTML output from `axw/gocov`_.
 
 .. _axw/gocov: https://github.com/axw/gocov
 
+**Contributors**: please format your source tree by using `./fmt.sh` before submitting a pull request. Thanks!
+
 Installation
 ------------
 
