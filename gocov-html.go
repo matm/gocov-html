@@ -21,31 +21,31 @@
 package main
 
 import (
-    "flag"
-    "github.com/matm/gocov-html/cov"
-    "io"
-    "log"
-    "os"
+	"flag"
+	"github.com/matm/gocov-html/cov"
+	"io"
+	"log"
+	"os"
 )
 
 func main() {
-    log.SetFlags(0)
-    flag.Parse()
-    var r io.Reader
+	log.SetFlags(0)
+	flag.Parse()
+	var r io.Reader
 
-    switch flag.NArg() {
-    case 0:
-        r = os.Stdin
-    case 1:
-        var err error
-        if r, err = os.Open(flag.Arg(0)); err != nil {
-            log.Fatal(err)
-        }
-    default:
-        log.Fatalf("Usage: %s data.json\n", os.Args[0])
-    }
+	switch flag.NArg() {
+	case 0:
+		r = os.Stdin
+	case 1:
+		var err error
+		if r, err = os.Open(flag.Arg(0)); err != nil {
+			log.Fatal(err)
+		}
+	default:
+		log.Fatalf("Usage: %s data.json\n", os.Args[0])
+	}
 
-    if err := cov.HTMLReportCoverage(r); err != nil {
-        log.Fatal(err)
-    }
+	if err := cov.HTMLReportCoverage(r); err != nil {
+		log.Fatal(err)
+	}
 }
