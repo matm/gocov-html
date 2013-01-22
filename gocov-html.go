@@ -21,19 +21,19 @@
 package main
 
 import (
-    "flag"
-    "fmt"
-    "github.com/matm/gocov-html/cov"
-    //    "io/ioutil"
-    //   "log"
-    "os"
+	"flag"
+	"fmt"
+	"github.com/matm/gocov-html/cov"
+	//    "io/ioutil"
+	//   "log"
+	"os"
 )
 
 func main() {
-    flag.Parse()
-    if flag.NArg() != 1 {
-        fmt.Fprintf(os.Stderr, fmt.Sprintf("Usage: %s data.json\n", os.Args[0]))
-        os.Exit(2)
-    }
-    os.Exit(cov.HTMLReportCoverage())
+	flag.Parse()
+	if flag.NArg() != 1 {
+		fmt.Fprintf(os.Stderr, fmt.Sprintf("Usage: %s data.json\n", os.Args[0]))
+		os.Exit(2)
+	}
+	os.Exit(cov.HTMLReportCoverage())
 }
