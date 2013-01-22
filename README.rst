@@ -16,7 +16,11 @@ Just type the following to install the program and its dependencies::
 Usage
 -----
 
-First generate coverage data with axw's `gocov`, then use it with `gocov-html`::
+`gocov-html` can read a JSON file or read from the standard input::
 
-    $ gocov test pkg > coverage.json
-    $ gocov-html coverage.json > pkg.html
+    $ gocov test net/http | gocov-html > http.html
+
+or::
+
+    $ gocov test net/http > http.json
+    $ gocov-html http.json > http.html
