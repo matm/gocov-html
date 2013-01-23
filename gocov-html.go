@@ -29,9 +29,11 @@ import (
 )
 
 func main() {
-	log.SetFlags(0)
-	flag.Parse()
 	var r io.Reader
+	log.SetFlags(0)
+
+	var s = flag.String("s", "", "path to custom CSS file")
+	flag.Parse()
 
 	switch flag.NArg() {
 	case 0:
@@ -45,7 +47,7 @@ func main() {
 		log.Fatalf("Usage: %s data.json\n", os.Args[0])
 	}
 
-	if err := cov.HTMLReportCoverage(r); err != nil {
+	if err := cov.HTMLReportCoverage(r, *s); err != nil {
 		log.Fatal(err)
 	}
 }

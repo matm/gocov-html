@@ -25,7 +25,18 @@ const (
 	htmlHeader = `<html>
     <head>
         <title>Coverage Report</title>
-        <!-- FIXME: Embedded style sheet -->
+        %s
+    </head>
+    <body>
+        <div id="doctitle">Coverage<br/>Report</div>
+    `
+
+	htmlFooter = `
+    </body>
+</html>`
+
+	// Default stylesheet
+	defaultCSS = `
         <style type="text/css">
             body { background-color: #fff; }
             table {
@@ -120,12 +131,5 @@ const (
                 font-weight: bold;
             }
         </style>
-    </head>
-    <body>
-        <div id="doctitle">Coverage<br/>Report</div>
-    `
-
-	htmlFooter = `
-    </body>
-</html>`
+        `
 )
