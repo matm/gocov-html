@@ -24,3 +24,8 @@ or::
 
     $ gocov test net/http > http.json
     $ gocov-html http.json > http.html
+
+The generated HTML content comes along with a default embedded CSS. Use the `-s` 
+flag to use a custom stylesheet::
+
+    $ gocov test net/http | gocov-html -s mystyle.css > http.html
