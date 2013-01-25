@@ -106,7 +106,8 @@ func (a *annotator) printFunctionSource(w io.Writer, fn *gocov.Function) error {
 		} else {
 			tr += ">"
 		}
-		fmt.Fprintf(w, "%s<td>%d</td><td><pre>%s</pre></td></tr>", tr, lineno, strings.Replace(line, "\t", "        ", -1)) //TODO make the number of spaces an argument of printFunctionSource
+		fmt.Fprintf(w, "%s<td>%d</td><td><code><pre>%s</pre></code></td></tr>", tr, lineno,
+			strings.Replace(line, "\t", "        ", 1))
 	}
 	fmt.Fprintln(w, "</table>")
 

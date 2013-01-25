@@ -113,6 +113,7 @@ const (
             table.listing td:first-child {
                 text-align: right;
                 font-weight: bold;
+                vertical-align: center;
             }
             table.listing tr.miss td {
                 background-color: #FFBBB8;
@@ -130,6 +131,7 @@ const (
             .info code {
                 font-weight: bold;
             }
+            pre { margin: 1px; }
         </style>
         `
 )
