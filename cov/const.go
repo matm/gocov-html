@@ -134,6 +134,14 @@ const (
             .info code {
             }
             pre { margin: 1px; }
+            pre.cmd { 
+                background-color: #e9e9e9;
+                border-radius: 5px 5px 5px 5px;
+                padding: 10px;
+                margin: 20px;
+                line-height: 18px;
+                font-size; 14px;
+            }
             a { 
                 text-decoration: none; 
                 color: #375eab;
@@ -143,5 +151,6 @@ const (
         </style>
         `
 
-	overview = `<p>Here is a coverage report after analysis of the <code>%s</code> package.</p>`
+	overview = `<p>This is a coverage report created after analysis of the <code>%s</code> package. It 
+        has been generated with the following command:</p><pre class="cmd">gocov test %s | gocov-html</pre>        <p>Here are the stats. Please select a function name to view its implementation and see what's left for testing.</p>`
 )

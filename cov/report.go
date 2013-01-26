@@ -145,7 +145,7 @@ func printPackage(w io.Writer, r *report, pkg *gocov.Package) {
 	fmt.Fprintf(w, "<div class=\"package\">%s</div>\n", pkg.Name)
 	fmt.Fprintf(w, "<div id=\"totalcov\">%s</div>\n", pkg.Name)
 	fmt.Fprintf(w, "<div class=\"funcname\">Overview</div>")
-	fmt.Fprintf(w, overview, pkg.Name)
+	fmt.Fprintf(w, overview, pkg.Name, pkg.Name)
 	fmt.Fprintf(w, "<table class=\"overview\">\n")
 	for _, fn := range functions {
 		reached := fn.statementsReached
