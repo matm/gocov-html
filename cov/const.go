@@ -28,7 +28,7 @@ const (
         %s
     </head>
     <body>
-        <div id="doctitle">Coverage<br/>Report</div>
+        <div id="doctitle">Coverage Report</div>
     `
 
 	htmlFooter = `
@@ -40,67 +40,70 @@ const (
         <style type="text/css">
             body { background-color: #fff; }
             table {
-                margin-left: auto;
-                margin-right: auto;
+                margin-left: 10px;
+                border-collapse: collapse;
             }
             td { 
-                background-color: #eee; 
-                padding: 5px;
+                background-color: #fff; 
+                padding: 2px;
+            }
+            table.overview td {
+                padding-right: 20px;
             }
             td.percent, td.linecount { text-align: right; }
-            div.package, #totalcov, #doctitle { 
+            div.package, #totalcov { 
                 position: fixed;
-                color: brown;
-                background-color: #eee; 
-                font-size: 24px;
+                color: #fff;
+                background-color: #375eab; 
+                font-size: 16px;
                 font-weight: bold;
                 padding: 10px;
+                border-radius: 5px 5px 5px 5px;
             }
             div.package, #totalcov { 
                 float: right; 
                 right: 10px;
             }
             #totalcov { 
-                top: 60px;
-                margin-top: 10px;
-                color: green;
+                background-color: #fff;
+                color: #000;
+                border: 1px solid #375eab;
                 clear: both;
             }
+            div.package {
+                top: 10px;
+            }
             #doctitle { 
-                float: left;
-                left: 10px;
-                font-size: 20px;
-                margin-top: 10px;
-                color: black;
-                text-align: center;
+                background-color: #fff; 
+                font-size: 24px;
+                margin-top: 20px;
+                margin-left: 10px;
+                color: #375eab;
+                font-weight: bold;
             }
             #about {
-                position: fixed;
-                float: left;
-                top: 90px;
-                left: 10px;
+                margin-left: 18px;
                 font-size: 10px;
             }
             table tr:last-child td {
                 font-weight: bold;
-                color: brown;
             }
             .functitle, .funcname { 
                 text-align: center; 
-                font-size: 30px; 
-                color: brown; 
+                font-size: 20px; 
+                font-weight: bold; 
+                color: 375eab; 
             }
             .funcname {
                 text-align: left;
-                margin-left: 140px;
+                margin-top: 20px;
+                margin-left: 10px;
                 margin-bottom: 20px;
-                padding-top: 20px;
-                padding-bottom: 5px;
-                border-bottom: 3px solid #ccc;
+                padding: 2px 5px 5px;
+                background-color: #e0ebf5;
             }
             table.listing {
-                margin-left: 140px;
-                border-collapse: collapse;
+                margin-left: 10px;
             }
             table.listing td {
                 padding: 0px;
@@ -126,12 +129,19 @@ const (
                 font-weight: bold;
             }
             .info {
-                margin-left: 140px;
+                margin-left: 10px;
             }
             .info code {
-                font-weight: bold;
             }
             pre { margin: 1px; }
+            a { 
+                text-decoration: none; 
+                color: #375eab;
+            }
+            a:hover { text-decoration: underline; }
+            p { margin-left: 10px; }
         </style>
         `
+
+	overview = `<p>Here is a coverage report after analysis of the <code>%s</code> package.</p>`
 )

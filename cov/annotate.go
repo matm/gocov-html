@@ -78,7 +78,7 @@ func (a *annotator) printFunctionSource(w io.Writer, fn *gocov.Function) error {
 	lineno := file.Line(file.Pos(fn.Start))
 	lines := strings.Split(string(data)[fn.Start:fn.End], "\n")
 	fmt.Fprintln(w)
-	fmt.Fprintf(w, "<div class=\"funcname\" id=\"fn_%s\">%s</div>", fn.Name, fn.Name)
+	fmt.Fprintf(w, "<div class=\"funcname\" id=\"fn_%s\">func %s</div>", fn.Name, fn.Name)
 	fmt.Fprintf(w, "<div class=\"info\"><a href=\"#s_fn_%s\">Back</a><p>In <code>%s</code>:</p></div>",
 		fn.Name, fn.File)
 	fmt.Fprintln(w, "<table class=\"listing\">")

@@ -140,11 +140,13 @@ func printPackage(w io.Writer, r *report, pkg *gocov.Package) {
 		css = fmt.Sprintf("<link rel=\"stylesheet\" href=\"%s\" />", r.stylesheet)
 	}
 	fmt.Fprintf(w, htmlHeader, css)
-	fmt.Fprintf(w, "<div id=\"about\">Generated on<br/> %s<br/>with <a href=\"%s\">gocov-html</a></div>",
+	fmt.Fprintf(w, "<div id=\"about\">Generated on %s with <a href=\"%s\">gocov-html</a></div>",
 		time.Now().Format(time.RFC822Z), ProjectUrl)
 	fmt.Fprintf(w, "<div class=\"package\">%s</div>\n", pkg.Name)
 	fmt.Fprintf(w, "<div id=\"totalcov\">%s</div>\n", pkg.Name)
-	fmt.Fprintf(w, "<table>\n")
+	fmt.Fprintf(w, "<div class=\"funcname\">Overview</div>")
+	fmt.Fprintf(w, overview, pkg.Name)
+	fmt.Fprintf(w, "<table class=\"overview\">\n")
 	for _, fn := range functions {
 		reached := fn.statementsReached
 		totalStatements += len(fn.Statements)
@@ -156,8 +158,8 @@ func printPackage(w io.Writer, r *report, pkg *gocov.Package) {
 		if len(fn.Name) > longestFunctionName {
 			longestFunctionName = len(fn.Name)
 		}
-		fmt.Fprintf(w, "<tr id=\"s_fn_%s\"><td>%s/%s</td><td class=\"fn\"><code><a href=\"#fn_%s\">%s(...)</a></code></td><td class=\"percent\">%.2f%%</td><td class=\"linecount\">%d/%d</td></tr>\n",
-			fn.Name, pkg.Name, filepath.Base(fn.File), fn.Name, fn.Name, stmtPercent,
+		fmt.Fprintf(w, "<tr id=\"s_fn_%s\"><td><code><a href=\"#fn_%s\">%s(...)</a></code></td><td><code>%s/%s</code></td><td class=\"percent\"><code>%.2f%%</code></td><td class=\"linecount\"><code>%d/%d</code></td></tr>\n",
+			fn.Name, fn.Name, fn.Name, pkg.Name, filepath.Base(fn.File), stmtPercent,
 			reached, len(fn.Statements))
 	}
 
@@ -165,7 +167,7 @@ func printPackage(w io.Writer, r *report, pkg *gocov.Package) {
 	if totalStatements > 0 {
 		funcPercent = float64(totalReached) / float64(totalStatements) * 100
 	}
-	fmt.Fprintf(w, "<tr><td>%s</td><td></td><td class=\"percent\">%.2f%%</td><td class=\"linecount\">%d/%d</td></tr>\n",
+	fmt.Fprintf(w, "<tr><td colspan=\"2\"><code>%s</code></td><td class=\"percent\"><code>%.2f%%</code></td><td class=\"linecount\"><code>%d/%d</code></td></tr>\n",
 		pkg.Name, funcPercent,
 		totalReached, totalStatements)
 	fmt.Fprintf(w, "</table>\n")
