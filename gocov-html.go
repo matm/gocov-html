@@ -29,7 +29,7 @@ import (
 )
 
 func main() {
-	var r io.ReadCloser
+	var r io.Reader
 	log.SetFlags(0)
 
 	var s = flag.String("s", "", "path to custom CSS file")
@@ -43,7 +43,6 @@ func main() {
 		if r, err = os.Open(flag.Arg(0)); err != nil {
 			log.Fatal(err)
 		}
-		defer r.Close()
 	default:
 		log.Fatalf("Usage: %s data.json\n", os.Args[0])
 	}
