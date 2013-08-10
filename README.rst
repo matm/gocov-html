@@ -11,12 +11,12 @@ Installation
 Just type the following to install the program and its dependencies::
 
     $ go get github.com/axw/gocov/gocov
-    $ go get github.com/matm/gocov-html
+    $ go get -u github.com/matm/gocov-html
 
 Usage
 -----
 
-`gocov-html` can read a JSON file or read from the standard input::
+`gocov-html` can read a JSON file or read from standard input::
 
     $ gocov test net/http | gocov-html > http.html
 
