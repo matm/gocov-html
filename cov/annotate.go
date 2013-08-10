@@ -24,6 +24,7 @@ import (
 	"fmt"
 	"github.com/axw/gocov"
 	"go/token"
+	"html"
 	"io"
 	"io/ioutil"
 	"os"
@@ -107,7 +108,7 @@ func (a *annotator) printFunctionSource(w io.Writer, fn *gocov.Function) error {
 			tr += ">"
 		}
 		fmt.Fprintf(w, "%s<td>%d</td><td><code><pre>%s</pre></code></td></tr>", tr, lineno,
-			strings.Replace(line, "\t", "        ", -1))
+			html.EscapeString(strings.Replace(line, "\t", "        ", -1)))
 	}
 	fmt.Fprintln(w, "</table>")
 
