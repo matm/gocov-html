@@ -110,17 +110,28 @@ func (r *report) clear() {
 	r.packages = nil
 }
 
-// PrintReport prints a coverage report to the given writer.
-func printReport(w io.Writer, r *report) {
-	w = tabwriter.NewWriter(w, 0, 8, 0, '\t', 0)
-	for _, pkg := range r.packages {
-		printPackage(w, r, pkg)
-		fmt.Fprintln(w)
-	}
+type reportPackageList []reportPackage
+
+type reportPackage struct {
+	pkg               *gocov.Package
+	functions         reportFunctionList
+	totalStatements   int
+	reachedStatements int
 }
 
-func printPackage(w io.Writer, r *report, pkg *gocov.Package) {
-	functions := make(reportFunctionList, len(pkg.Functions))
+func (rp *reportPackage) percentageReached() float64 {
+	var rv float64
+	if rp.totalStatements > 0 {
+		rv = float64(rp.reachedStatements) / float64(rp.totalStatements) * 100
+	}
+	return rv
+}
+
+func buildReportPackage(pkg *gocov.Package) reportPackage {
+	rv := reportPackage{
+		pkg:       pkg,
+		functions: make(reportFunctionList, len(pkg.Functions)),
+	}
 	for i, fn := range pkg.Functions {
 		reached := 0
 		for _, stmt := range fn.Statements {
@@ -128,59 +139,101 @@ func printPackage(w io.Writer, r *report, pkg *gocov.Package) {
 				reached++
 			}
 		}
-		functions[i] = reportFunction{fn, reached}
+		rv.functions[i] = reportFunction{fn, reached}
+		rv.totalStatements += len(fn.Statements)
+		rv.reachedStatements += reached
 	}
-	sort.Sort(reverse{functions})
+	sort.Sort(reverse{rv.functions})
+	return rv
+}
 
-	var longestFunctionName int
-	var totalStatements, totalReached int
-
+// PrintReport prints a coverage report to the given writer.
+func printReport(w io.Writer, r *report) {
 	css := defaultCSS
 	if len(r.stylesheet) > 0 {
 		css = fmt.Sprintf("<link rel=\"stylesheet\" href=\"%s\" />", r.stylesheet)
 	}
 	fmt.Fprintf(w, htmlHeader, css)
+
+	reportPackages := make(reportPackageList, len(r.packages))
+	for i, pkg := range r.packages {
+		reportPackages[i] = buildReportPackage(pkg)
+	}
+
+	summaryPackage := reportPackages[0]
+	if len(reportPackages) > 1 {
+		summaryPackage = printReportOverview(w, reportPackages)
+	}
+
+	w = tabwriter.NewWriter(w, 0, 8, 0, '\t', 0)
+	for _, rp := range reportPackages {
+		printPackage(w, r, rp)
+		fmt.Fprintln(w)
+	}
+
+	printReportSummary(w, summaryPackage)
+
+	fmt.Fprintf(w, htmlFooter)
+}
+
+func printReportSummary(w io.Writer, rp reportPackage) {
+	fmt.Fprintf(w, "<div id=\"summaryWrapper\">")
+	fmt.Fprintf(w, "<div class=\"package\">%s</div>\n", rp.pkg.Name)
+	fmt.Fprintf(w, "<div id=\"totalcov\">%.2f%%</div>\n", rp.percentageReached())
+	fmt.Fprintf(w, "</div>")
+}
+
+func printReportOverview(w io.Writer, reportPackages reportPackageList) reportPackage {
+	rv := reportPackage{
+		pkg: &gocov.Package{Name: "Report Total"},
+	}
+	fmt.Fprintf(w, "<div class=\"funcname\">Report Overview</div>")
+	fmt.Fprintf(w, "<table class=\"overview\">\n")
+	for _, rp := range reportPackages {
+		rv.reachedStatements += rp.reachedStatements
+		rv.totalStatements += rp.totalStatements
+		fmt.Fprintf(w, "<tr id=\"s_pkg_%s\"><td><code><a href=\"#pkg_%s\">%s(...)</a></code></td><td class=\"percent\"><code>%.2f%%</code></td><td class=\"linecount\"><code>%d/%d</code></td></tr>\n",
+			rp.pkg.Name, rp.pkg.Name, rp.pkg.Name, rp.percentageReached(), rp.reachedStatements, rp.totalStatements)
+	}
+
+	fmt.Fprintf(w, "<tr><td><code>%s</code></td><td class=\"percent\"><code>%.2f%%</code></td><td class=\"linecount\"><code>%d/%d</code></td></tr>\n",
+		"Report Total", rv.percentageReached(),
+		rv.reachedStatements, rv.totalStatements)
+	fmt.Fprintf(w, "</table>\n")
+
+	return rv
+}
+
+func printPackage(w io.Writer, r *report, rp reportPackage) {
+
 	fmt.Fprintf(w, "<div id=\"about\">Generated on %s with <a href=\"%s\">gocov-html</a></div>",
 		time.Now().Format(time.RFC822Z), ProjectUrl)
-	fmt.Fprintf(w, "<div class=\"package\">%s</div>\n", pkg.Name)
-	fmt.Fprintf(w, "<div id=\"totalcov\">%s</div>\n", pkg.Name)
-	fmt.Fprintf(w, "<div class=\"funcname\">Overview</div>")
-	fmt.Fprintf(w, overview, pkg.Name, pkg.Name)
+	fmt.Fprintf(w, "<div id=\"pkg_%s\" class=\"funcname\">Package Overview: %s <span class=\"packageTotal\">%.2f%%</span></div>", rp.pkg.Name, rp.pkg.Name, rp.percentageReached())
+	fmt.Fprintf(w, overview, rp.pkg.Name, rp.pkg.Name)
 	fmt.Fprintf(w, "<table class=\"overview\">\n")
-	for _, fn := range functions {
+	for _, fn := range rp.functions {
 		reached := fn.statementsReached
-		totalStatements += len(fn.Statements)
-		totalReached += reached
 		var stmtPercent float64 = 0
 		if len(fn.Statements) > 0 {
 			stmtPercent = float64(reached) / float64(len(fn.Statements)) * 100
 		}
-		if len(fn.Name) > longestFunctionName {
-			longestFunctionName = len(fn.Name)
-		}
 		fmt.Fprintf(w, "<tr id=\"s_fn_%s\"><td><code><a href=\"#fn_%s\">%s(...)</a></code></td><td><code>%s/%s</code></td><td class=\"percent\"><code>%.2f%%</code></td><td class=\"linecount\"><code>%d/%d</code></td></tr>\n",
-			fn.Name, fn.Name, fn.Name, pkg.Name, filepath.Base(fn.File), stmtPercent,
+			fn.Name, fn.Name, fn.Name, rp.pkg.Name, filepath.Base(fn.File), stmtPercent,
 			reached, len(fn.Statements))
 	}
 
-	var funcPercent float64
-	if totalStatements > 0 {
-		funcPercent = float64(totalReached) / float64(totalStatements) * 100
-	}
 	fmt.Fprintf(w, "<tr><td colspan=\"2\"><code>%s</code></td><td class=\"percent\"><code>%.2f%%</code></td><td class=\"linecount\"><code>%d/%d</code></td></tr>\n",
-		pkg.Name, funcPercent,
-		totalReached, totalStatements)
+		rp.pkg.Name, rp.percentageReached(),
+		rp.reachedStatements, rp.totalStatements)
 	fmt.Fprintf(w, "</table>\n")
 
 	// Embbed function source code
-	for _, fn := range functions {
+	for _, fn := range rp.functions {
 		annotateFunctionSource(w, fn.Function)
 	}
 
-	fmt.Fprintf(w, "<script type=\"text/javascript\">\ndocument.getElementById(\"totalcov\").textContent = \"%.2f%%\"\n</script>", funcPercent)
 	fmt.Fprintf(w, "\n<!-- Can be parsed by external script\nPACKAGE:%s DONE:%.2f\n-->\n",
-		pkg.Name, funcPercent)
-	fmt.Fprintf(w, htmlFooter)
+		rp.pkg.Name, rp.percentageReached())
 }
 
 func exists(path string) (bool, error) {

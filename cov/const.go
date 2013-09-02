@@ -52,7 +52,6 @@ const (
             }
             td.percent, td.linecount { text-align: right; }
             div.package, #totalcov { 
-                position: fixed;
                 color: #fff;
                 background-color: #375eab; 
                 font-size: 16px;
@@ -65,13 +64,23 @@ const (
                 right: 10px;
             }
             #totalcov { 
+                top: 10px;
+                position: relative;
                 background-color: #fff;
                 color: #000;
                 border: 1px solid #375eab;
                 clear: both;
             }
-            div.package {
+            #summaryWrapper {
+                position: fixed;
                 top: 10px;
+                float: right;
+                right: 10px;
+
+            }
+            span.packageTotal {
+                float: right;
+                color: #000;
             }
             #doctitle { 
                 background-color: #fff; 
