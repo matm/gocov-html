@@ -5,6 +5,14 @@ This is a simple helper tool for generating HTML output from `axw/gocov`_.
 
 .. _axw/gocov: https://github.com/axw/gocov
 
+Here is a screenshot:
+
+.. image:: https://dl.dropboxusercontent.com/u/37900935/Screens/coverage.png
+   :scale: 40 %
+   :alt: HTML coverage report screenshot
+   :align: center
+
+
 Installation
 ------------
 
