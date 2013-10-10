@@ -161,6 +161,8 @@ func printReport(w io.Writer, r *report) {
 	}
 
 	summaryPackage := reportPackages[0]
+	fmt.Fprintf(w, "<div id=\"about\">Generated on %s with <a href=\"%s\">gocov-html</a></div>",
+		time.Now().Format(time.RFC822Z), ProjectUrl)
 	if len(reportPackages) > 1 {
 		summaryPackage = printReportOverview(w, reportPackages)
 	}
@@ -205,9 +207,6 @@ func printReportOverview(w io.Writer, reportPackages reportPackageList) reportPa
 }
 
 func printPackage(w io.Writer, r *report, rp reportPackage) {
-
-	fmt.Fprintf(w, "<div id=\"about\">Generated on %s with <a href=\"%s\">gocov-html</a></div>",
-		time.Now().Format(time.RFC822Z), ProjectUrl)
 	fmt.Fprintf(w, "<div id=\"pkg_%s\" class=\"funcname\">Package Overview: %s <span class=\"packageTotal\">%.2f%%</span></div>", rp.pkg.Name, rp.pkg.Name, rp.percentageReached())
 	fmt.Fprintf(w, overview, rp.pkg.Name, rp.pkg.Name)
 	fmt.Fprintf(w, "<table class=\"overview\">\n")
