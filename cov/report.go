@@ -192,7 +192,7 @@ func printReportOverview(w io.Writer, reportPackages reportPackageList) reportPa
 	for _, rp := range reportPackages {
 		rv.reachedStatements += rp.reachedStatements
 		rv.totalStatements += rp.totalStatements
-		fmt.Fprintf(w, "<tr id=\"s_pkg_%s\"><td><code><a href=\"#pkg_%s\">%s(...)</a></code></td><td class=\"percent\"><code>%.2f%%</code></td><td class=\"linecount\"><code>%d/%d</code></td></tr>\n",
+		fmt.Fprintf(w, "<tr id=\"s_pkg_%s\"><td><code><a href=\"#pkg_%s\">%s</a></code></td><td class=\"percent\"><code>%.2f%%</code></td><td class=\"linecount\"><code>%d/%d</code></td></tr>\n",
 			rp.pkg.Name, rp.pkg.Name, rp.pkg.Name, rp.percentageReached(), rp.reachedStatements, rp.totalStatements)
 	}
 
