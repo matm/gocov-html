@@ -19,7 +19,7 @@ Installation
 Just type the following to install the program and its dependencies::
 
     $ go get github.com/axw/gocov/gocov
-    $ go get gopkg.in/matm/v1/gocov-html
+    $ go get -u gopkg.in/matm/v1/gocov-html
 
 Usage
 -----
