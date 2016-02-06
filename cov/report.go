@@ -160,6 +160,12 @@ func printReport(w io.Writer, r *report) {
 		reportPackages[i] = buildReportPackage(pkg)
 	}
 
+	if len(reportPackages) == 0 {
+		fmt.Fprintf(w, "<p>no test files in package.</p>")
+		fmt.Fprintf(w, htmlFooter)
+		return
+
+	}
 	summaryPackage := reportPackages[0]
 	fmt.Fprintf(w, "<div id=\"about\">Generated on %s with <a href=\"%s\">gocov-html</a></div>",
 		time.Now().Format(time.RFC822Z), ProjectUrl)
