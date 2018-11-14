@@ -22,7 +22,7 @@ package main
 
 import (
 	"flag"
-	"github.com/matm/gocov-html/cov"
+	"github.com/Blackmage89/gocov-html/cov"
 	"io"
 	"log"
 	"os"
@@ -33,6 +33,7 @@ func main() {
 	log.SetFlags(0)
 
 	var s = flag.String("s", "", "path to custom CSS file")
+	var i = flag.Bool("i", false, "put low coverage functions on top")
 	flag.Parse()
 
 	switch flag.NArg() {
@@ -47,7 +48,7 @@ func main() {
 		log.Fatalf("Usage: %s data.json\n", os.Args[0])
 	}
 
-	if err := cov.HTMLReportCoverage(r, *s); err != nil {
+	if err := cov.HTMLReportCoverage(r, *i, *s); err != nil {
 		log.Fatal(err)
 	}
 }
