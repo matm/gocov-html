@@ -38,7 +38,10 @@ const (
 	// Default stylesheet
 	defaultCSS = `
         <style type="text/css">
-            body { background-color: #fff; }
+            body {
+                background-color: #fff;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            }
             table {
                 margin-left: 10px;
                 border-collapse: collapse;
@@ -101,7 +104,7 @@ const (
                 text-align: center; 
                 font-size: 20px; 
                 font-weight: bold; 
-                color: 375eab; 
+                color: #375eab; 
             }
             .funcname {
                 text-align: left;
@@ -149,7 +152,7 @@ const (
                 padding: 10px;
                 margin: 20px;
                 line-height: 18px;
-                font-size; 14px;
+                font-size: 14px;
             }
             a { 
                 text-decoration: none; 
