@@ -22,7 +22,7 @@ package main
 
 import (
 	"flag"
-	"github.freewheel.tv/xingyanli/gocov-html-reorder/cov"
+	"github.com/XingyanLee/gocov-html/cov"
 	"io"
 	"log"
 	"os"
