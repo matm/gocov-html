@@ -21,7 +21,7 @@
 package cov
 
 const (
-	ProjectUrl = "https://github.com/matm/gocov-html"
+	ProjectUrl = "https://github.com/matm/gocov-html-reorder"
 	htmlHeader = `<html>
     <head>
         <title>Coverage Report</title>
@@ -101,7 +101,7 @@ const (
                 text-align: center; 
                 font-size: 20px; 
                 font-weight: bold; 
-                color: 375eab; 
+                color: #375eab; 
             }
             .funcname {
                 text-align: left;
@@ -149,7 +149,7 @@ const (
                 padding: 10px;
                 margin: 20px;
                 line-height: 18px;
-                font-size; 14px;
+                font-size: 14px;
             }
             a { 
                 text-decoration: none; 
