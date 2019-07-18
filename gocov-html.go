@@ -22,7 +22,7 @@ package main
 
 import (
 	"flag"
-	"github.com/matm/gocov-html/cov"
+	"github.com/XingyanLee/gocov-html/cov"
 	"io"
 	"log"
 	"os"
@@ -33,21 +33,24 @@ func main() {
 	log.SetFlags(0)
 
 	var s = flag.String("s", "", "path to custom CSS file")
+	var oldFileName  = flag.String("diff", "", "path to old json file")
 	flag.Parse()
-
+	//var oldFileName  string
 	switch flag.NArg() {
 	case 0:
 		r = os.Stdin
 	case 1:
 		var err error
+		//log.Print(flag.Arg(0))
 		if r, err = os.Open(flag.Arg(0)); err != nil {
 			log.Fatal(err)
 		}
 	default:
 		log.Fatalf("Usage: %s data.json\n", os.Args[0])
 	}
-
-	if err := cov.HTMLReportCoverage(r, *s); err != nil {
+	//log.Print("oldFileName1:",*oldFileName)
+	if err := cov.HTMLReportCoverage(r, *s, *oldFileName); err != nil {
 		log.Fatal(err)
 	}
 }
+
