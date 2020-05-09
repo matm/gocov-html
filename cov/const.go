@@ -25,6 +25,7 @@ const (
 	htmlHeader = `<html>
     <head>
         <title>Coverage Report</title>
+        <meta charset="utf-8">
         %s
     </head>
     <body>
