@@ -1,4 +1,5 @@
 v 1.1.1
+  - Show a 100% coverage for empty functions/methods. #16
   - Update project layout and show program version. #17
 
 v 1.1
