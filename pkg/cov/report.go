@@ -23,7 +23,6 @@ package cov
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/axw/gocov"
 	"io"
 	"io/ioutil"
 	"os"
@@ -31,6 +30,8 @@ import (
 	"sort"
 	"text/tabwriter"
 	"time"
+
+	"github.com/axw/gocov"
 )
 
 func unmarshalJson(data []byte) (packages []*gocov.Package, err error) {
@@ -221,6 +222,8 @@ func printPackage(w io.Writer, r *report, rp reportPackage) {
 		var stmtPercent float64 = 0
 		if len(fn.Statements) > 0 {
 			stmtPercent = float64(reached) / float64(len(fn.Statements)) * 100
+		} else if len(fn.Statements) == 0 {
+			stmtPercent = 100
 		}
 		fmt.Fprintf(w, "<tr id=\"s_fn_%s\"><td><code><a href=\"#fn_%s\">%s(...)</a></code></td><td><code>%s/%s</code></td><td class=\"percent\"><code>%.2f%%</code></td><td class=\"linecount\"><code>%d/%d</code></td></tr>\n",
 			fn.Name, fn.Name, fn.Name, rp.pkg.Name, filepath.Base(fn.File), stmtPercent,
