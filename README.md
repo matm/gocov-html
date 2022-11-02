@@ -1,7 +1,6 @@
 # Gocov HTML export
 
-This is a simple helper tool for generating HTML output from
-[axw/gocov](https://github.com/axw/gocov/)
+This is a simple helper tool for generating HTML output from [axw/gocov](https://github.com/axw/gocov/)
 
 Here is a screenshot:
 
@@ -11,8 +10,8 @@ Here is a screenshot:
 
 Just type the following to install the program and its dependencies:
 ```
-$ go get github.com/axw/gocov/gocov
-$ go get github.com/matm/gocov-html
+$ go install github.com/axw/gocov/gocov@latest
+$ go install github.com/matm/gocov-html/cmd/gocov-html@latest
 ```
 
 ## Usage
