@@ -1,4 +1,4 @@
-// Copyright (c) 2013 Mathias Monnerville
+// Copyright (c) 2013-2022 Mathias Monnerville
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to
@@ -22,18 +22,33 @@ package main
 
 import (
 	"flag"
-	"github.com/matm/gocov-html/cov"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"runtime"
+
+	"github.com/matm/gocov-html/pkg/config"
+	"github.com/matm/gocov-html/pkg/cov"
 )
 
 func main() {
 	var r io.Reader
 	log.SetFlags(0)
 
-	var s = flag.String("s", "", "path to custom CSS file")
+	css := flag.String("s", "", "path to custom CSS file")
+	showVersion := flag.Bool("v", false, "show program version")
 	flag.Parse()
+
+	if *showVersion {
+		fmt.Printf("Version:      %s\n", config.Version)
+		fmt.Printf("Git revision: %s\n", config.GitRev)
+		fmt.Printf("Git branch:   %s\n", config.GitBranch)
+		fmt.Printf("Go version:   %s\n", runtime.Version())
+		fmt.Printf("Built:        %s\n", config.BuildDate)
+		fmt.Printf("OS/Arch:      %s/%s\n", runtime.GOOS, runtime.GOARCH)
+		return
+	}
 
 	switch flag.NArg() {
 	case 0:
@@ -47,7 +62,7 @@ func main() {
 		log.Fatalf("Usage: %s data.json\n", os.Args[0])
 	}
 
-	if err := cov.HTMLReportCoverage(r, *s); err != nil {
+	if err := cov.HTMLReportCoverage(r, *css); err != nil {
 		log.Fatal(err)
 	}
 }
