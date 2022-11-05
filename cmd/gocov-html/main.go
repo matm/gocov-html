@@ -38,6 +38,7 @@ func main() {
 
 	css := flag.String("s", "", "path to custom CSS file")
 	showVersion := flag.Bool("v", false, "show program version")
+	showDefaultCSS := flag.Bool("d", false, "output CSS of default theme")
 	flag.Parse()
 
 	if *showVersion {
@@ -47,6 +48,11 @@ func main() {
 		fmt.Printf("Go version:   %s\n", runtime.Version())
 		fmt.Printf("Built:        %s\n", config.BuildDate)
 		fmt.Printf("OS/Arch:      %s/%s\n", runtime.GOOS, runtime.GOARCH)
+		return
+	}
+
+	if *showDefaultCSS {
+		fmt.Println(cov.DefaultCSS)
 		return
 	}
 
