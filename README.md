@@ -14,7 +14,25 @@ $ go install github.com/axw/gocov/gocov@latest
 $ go install github.com/matm/gocov-html/cmd/gocov-html@latest
 ```
 
+## Features Matrix
+
+Feature|Version
+:---|---:
+Use custom CSS file|`1.0`
+Show program version|`1.1.1`
+Write CSS of default theme to stdout|`1.2`
+Embbed custom CSS into final HTML document|`1.2`
+
 ## Usage
+
+```bash
+$ gocov-html -h
+Usage of ./gocov-html:
+  -d    output CSS of default theme
+  -s string
+        path to custom CSS file
+  -v    show program version
+```
 
 `gocov-html` can read a JSON file or read from standard input:
 ```
@@ -22,8 +40,16 @@ $ gocov test strings | gocov-html > strings.html
 ok      strings 0.700s  coverage: 98.1% of statements
 ```
 
-The generated HTML content comes along with a default embedded CSS. Use the `-s` 
-flag to use a custom stylesheet:
+The generated HTML content comes along with a default embedded CSS. However a custom stylesheet can be used with the `-s` flag:
 ```
 $ gocov test net/http | gocov-html -s mystyle.css > http.html
 ```
+
+As of version 1.2:
+- A `-d` flag is available to write the defaut stylesheet to the standard output. This is provided for convenience and easy editing:
+  ```
+  $ gocov-html -d > newstyle.css
+  ... edit newstyle.css ...
+  $ gocov test strings | gocov-html -s newstyle.css > http.html
+  ```
+- The content of the stylesheet given to `-s` is embedded into the final HTML document

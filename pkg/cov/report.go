@@ -32,6 +32,7 @@ import (
 	"time"
 
 	"github.com/axw/gocov"
+	"github.com/rotisserie/eris"
 )
 
 func unmarshalJson(data []byte) (packages []*gocov.Package, err error) {
@@ -149,10 +150,19 @@ func buildReportPackage(pkg *gocov.Package) reportPackage {
 }
 
 // PrintReport prints a coverage report to the given writer.
-func printReport(w io.Writer, r *report) {
-	css := defaultCSS
+func printReport(w io.Writer, r *report) error {
+	css := DefaultCSS
 	if len(r.stylesheet) > 0 {
-		css = fmt.Sprintf("<link rel=\"stylesheet\" href=\"%s\" />", r.stylesheet)
+		// Inline CSS.
+		f, err := os.Open(r.stylesheet)
+		if err != nil {
+			return eris.Wrap(err, "print report")
+		}
+		style, err := io.ReadAll(f)
+		if err != nil {
+			return eris.Wrap(err, "read style")
+		}
+		css = string(style)
 	}
 	fmt.Fprintf(w, htmlHeader, css)
 
@@ -164,7 +174,7 @@ func printReport(w io.Writer, r *report) {
 	if len(reportPackages) == 0 {
 		fmt.Fprintf(w, "<p>no test files in package.</p>")
 		fmt.Fprintf(w, htmlFooter)
-		return
+		return nil
 
 	}
 	summaryPackage := reportPackages[0]
@@ -181,8 +191,9 @@ func printReport(w io.Writer, r *report) {
 	}
 
 	printReportSummary(w, summaryPackage)
-
 	fmt.Fprintf(w, htmlFooter)
+
+	return nil
 }
 
 func printReportSummary(w io.Writer, rp reportPackage) {
@@ -260,9 +271,9 @@ func HTMLReportCoverage(r io.Reader, css string) error {
 
 	// Custom stylesheet?
 	stylesheet := ""
-	if len(css) > 0 {
+	if css != "" {
 		if _, err := exists(css); err != nil {
-			return err
+			return eris.Wrap(err, "stylesheet")
 		}
 		stylesheet = css
 	}
@@ -270,18 +281,18 @@ func HTMLReportCoverage(r io.Reader, css string) error {
 
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
-		return fmt.Errorf("failed to read coverage data: %s\n", err)
+		return eris.Wrap(err, "read coverage data")
 	}
 
 	packages, err := unmarshalJson(data)
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal coverage data: %s\n", err)
+		return eris.Wrap(err, "unmarshal coverage data")
 	}
 
 	for _, pkg := range packages {
 		report.addPackage(pkg)
 	}
 	fmt.Println()
-	printReport(os.Stdout, report)
-	return nil
+	err = printReport(os.Stdout, report)
+	return eris.Wrap(err, "HTML report")
 }
