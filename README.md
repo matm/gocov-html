@@ -16,12 +16,14 @@ $ go install github.com/matm/gocov-html/cmd/gocov-html@latest
 
 ## Features Matrix
 
-Feature|Version
-:---|---:
-Use custom CSS file|`1.0`
-Show program version|`1.1.1`
-Write CSS of default theme to stdout|`1.2`
-Embbed custom CSS into final HTML document|`1.2`
+Feature|CLI Flag|Version
+:---|:---|---:
+Use custom CSS file|`-s <filename>`|`1.0`
+Show program version|`-v`|`1.1.1`
+Write CSS of default theme to stdout|`-d`|`1.2`
+Embbed custom CSS into final HTML document|-|`1.2`
+List available themes|`-lt`|`1.2`
+Render with a specific theme|`-t <theme>`|`1.2`
 
 ## Usage
 

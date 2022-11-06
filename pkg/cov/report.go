@@ -191,7 +191,7 @@ func printReport(w io.Writer, r *report) error {
 	}
 
 	printReportSummary(w, summaryPackage)
-	fmt.Fprintf(w, htmlFooter)
+	fmt.Fprintln(w, htmlFooter)
 
 	return nil
 }

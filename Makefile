@@ -11,7 +11,7 @@ build:
 	@go build -ldflags "all=$(GO_LDFLAGS)" ${MAIN_CMD}
 
 test:
-	@go test -v ./...
+	@go test ./...
 
 clean:
 	@rm -rf ${BIN}

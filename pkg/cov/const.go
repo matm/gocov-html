@@ -23,14 +23,13 @@ package cov
 const (
 	ProjectUrl = "https://github.com/matm/gocov-html"
 	htmlHeader = `<html>
-    <head>
-        <title>Coverage Report</title>
-        <meta charset="utf-8">
-        %s
-    </head>
-    <body>
-        <div id="doctitle">Coverage Report</div>
-    `
+<head>
+    <title>Coverage Report</title>
+    <meta charset="utf-8">
+    %s
+</head>
+<body>
+    <div id="doctitle">Coverage Report</div>`
 
 	htmlFooter = `
     </body>

@@ -39,6 +39,8 @@ func main() {
 	css := flag.String("s", "", "path to custom CSS file")
 	showVersion := flag.Bool("v", false, "show program version")
 	showDefaultCSS := flag.Bool("d", false, "output CSS of default theme")
+	listThemes := flag.Bool("lt", false, "list available themes")
+
 	flag.Parse()
 
 	if *showVersion {
@@ -53,6 +55,11 @@ func main() {
 
 	if *showDefaultCSS {
 		fmt.Println(cov.DefaultCSS)
+		return
+	}
+
+	if *listThemes {
+		fmt.Println("THEMES")
 		return
 	}
 
