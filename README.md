@@ -8,10 +8,12 @@ Here is a screenshot:
 
 ## Installation
 
-Requires Go 1.11+.
+Binaries for most amd64 systems are built for every release. Please just [grab a binary version of the latest release](https://github.com/matm/gocov-html/releases).
+
+However you can build it from source. Please note that building from source requires Go 1.11+.
 
 Just type the following to install the program and its dependencies:
-```
+```bash
 $ go install github.com/axw/gocov/gocov@latest
 $ go install github.com/matm/gocov-html/cmd/gocov-html@latest
 ```
@@ -29,7 +31,7 @@ Render with a specific theme|`-t <theme>`|`1.2`
 
 ## Usage
 
-```bash
+```
 $ gocov-html -h
 Usage of ./gocov-html:
   -d    output CSS of default theme

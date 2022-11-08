@@ -1,4 +1,5 @@
 v 1.2
+  - Provide binaries for a variety of os/arch. #31
   - Add support for themes. #24
   - Re-enable support for older Go compilers (1.11+). #29
   - New -d flag to output CSS content used in default theme. #22
