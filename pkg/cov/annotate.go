@@ -22,13 +22,14 @@ package cov
 
 import (
 	"fmt"
-	"github.com/axw/gocov"
 	"go/token"
 	"html"
 	"io"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/axw/gocov"
 )
 
 const (
@@ -41,17 +42,14 @@ type annotator struct {
 	files map[string]*token.File
 }
 
-func annotateFunctionSource(w io.Writer, fn *gocov.Function) {
+func annotateFunctionSource(w io.Writer, fn *gocov.Function) error {
 	if fn == nil {
 		panic("nil function to annotate")
 	}
 	a := &annotator{}
 	a.fset = token.NewFileSet()
 	a.files = make(map[string]*token.File)
-	a.printFunctionSource(w, fn)
-}
 
-func (a *annotator) printFunctionSource(w io.Writer, fn *gocov.Function) error {
 	// Load the file for line information. Probably overkill, maybe
 	// just compute the lines from offsets in here.
 	setContent := false

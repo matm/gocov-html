@@ -30,6 +30,7 @@ import (
 
 	"github.com/matm/gocov-html/pkg/config"
 	"github.com/matm/gocov-html/pkg/cov"
+	"github.com/matm/gocov-html/pkg/themes"
 )
 
 func main() {
@@ -53,8 +54,14 @@ func main() {
 		return
 	}
 
+	// FIXME.
+	err := themes.Use("golang")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if *showDefaultCSS {
-		fmt.Println(cov.DefaultCSS)
+		fmt.Println(themes.Current().Data().CSS)
 		return
 	}
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/matm/gocov-html/pkg/types"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestGet(t *testing.T) {
@@ -30,7 +29,6 @@ func TestGet(t *testing.T) {
 
 func TestList(t *testing.T) {
 	assert := assert.New(t)
-	require := require.New(t)
 	tests := []struct {
 		name  string
 		after func([]types.Beautifier)
@@ -40,9 +38,7 @@ func TestList(t *testing.T) {
 			for _, p := range ts {
 				assert.NotEmpty(p.Name(), "empty name")
 				assert.NotEmpty(p.Description(), "empty description")
-				z, err := p.Template()
-				require.NoError(err)
-				assert.NotNil(z, "missing template for %q theme", p.Name())
+				assert.NotNil(p.Template(), "missing template for %q theme", p.Name())
 			}
 		}},
 	}

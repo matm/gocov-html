@@ -9,5 +9,13 @@ type Beautifier interface {
 	// Description is a single line comment about the theme.
 	Description() string
 	// Template is the content that will be rendered.
-	Template() (*template.Template, error)
+	Template() *template.Template
+	Data() *TemplateData
+}
+
+type TemplateData struct {
+	CSS       string
+	Packages  ReportPackageList
+	Generated string
+	Site      string
 }
