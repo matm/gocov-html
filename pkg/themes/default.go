@@ -135,9 +135,9 @@ func (t defaultTheme) Data() *types.TemplateData {
     p { margin-left: 10px; }
 </style>`
 	return &types.TemplateData{
-		CSS:       css,
-		Generated: time.Now().Format(time.RFC822Z),
-		Site:      types.ProjectUrl,
+		CSS:        css,
+		When:       time.Now().Format(time.RFC822Z),
+		ProjectURL: types.ProjectURL,
 	}
 }
 

@@ -34,7 +34,7 @@ import (
 	"github.com/rotisserie/eris"
 )
 
-func unmarshalJson(data []byte) (packages []*gocov.Package, err error) {
+func unmarshalJSON(data []byte) (packages []*gocov.Package, err error) {
 	result := &struct{ Packages []*gocov.Package }{}
 	err = json.Unmarshal(data, result)
 	if err == nil {
@@ -170,7 +170,7 @@ func HTMLReportCoverage(r io.Reader, css string) error {
 		return eris.Wrap(err, "read coverage data")
 	}
 
-	packages, err := unmarshalJson(data)
+	packages, err := unmarshalJSON(data)
 	if err != nil {
 		return eris.Wrap(err, "unmarshal coverage data")
 	}

@@ -11,10 +11,18 @@ import (
 	"github.com/axw/gocov"
 )
 
-const ProjectUrl = "https://github.com/matm/gocov-html"
+// ProjectURL is the project's site on GitHub.
+const ProjectURL = "https://github.com/matm/gocov-html"
 
+const (
+	hitPrefix  = "    "
+	missPrefix = "MISS"
+)
+
+// ReportPackageList is a list of packages for the report.
 type ReportPackageList []ReportPackage
 
+// ReportPackage holds data about a Go package, its functions and some stats.
 type ReportPackage struct {
 	Pkg               *gocov.Package
 	Functions         ReportFunctionList
@@ -22,6 +30,8 @@ type ReportPackage struct {
 	ReachedStatements int
 }
 
+// PercentageReached computes the percentage of reached statements by the tests
+// for a package.
 func (rp *ReportPackage) PercentageReached() float64 {
 	var rv float64
 	if rp.TotalStatements > 0 {
@@ -30,17 +40,22 @@ func (rp *ReportPackage) PercentageReached() float64 {
 	return rv
 }
 
+// ReportFunction is a gocov Function with some added stats.
 type ReportFunction struct {
 	*gocov.Function
 	StatementsReached int
 }
 
+// FunctionLine holds the line of code, its line number in the source file
+// and whether the tests reached it.
 type FunctionLine struct {
-	Missed     bool
-	LineNumber int
 	Code       string
+	LineNumber int
+	Missed     bool
 }
 
+// CoveragePercent is the percentage of code coverage for a function. Returns 100
+// if the function has no statement.
 func (f ReportFunction) CoveragePercent() float64 {
 	reached := f.StatementsReached
 	var stmtPercent float64 = 0
@@ -52,21 +67,18 @@ func (f ReportFunction) CoveragePercent() float64 {
 	return stmtPercent
 }
 
+// ShortFileName returns the base path of the function's file name. Provided for
+// convenience to be used in the HTML template of the theme.
 func (f ReportFunction) ShortFileName() string {
 	return filepath.Base(f.File)
 }
 
-const (
-	hitPrefix  = "    "
-	missPrefix = "MISS"
-)
-
-type annotator struct {
-	fset  *token.FileSet
-	files map[string]*token.File
-}
-
-func (fn ReportFunction) Lines() []FunctionLine {
+// Lines returns information about all a function's lines of code.
+func (f ReportFunction) Lines() []FunctionLine {
+	type annotator struct {
+		fset  *token.FileSet
+		files map[string]*token.File
+	}
 	a := &annotator{}
 	a.fset = token.NewFileSet()
 	a.files = make(map[string]*token.File)
@@ -74,17 +86,17 @@ func (fn ReportFunction) Lines() []FunctionLine {
 	// Load the file for line information. Probably overkill, maybe
 	// just compute the lines from offsets in here.
 	setContent := false
-	file := a.files[fn.File]
+	file := a.files[f.File]
 	if file == nil {
-		info, err := os.Stat(fn.File)
+		info, err := os.Stat(f.File)
 		if err != nil {
 			panic(err)
 		}
-		file = a.fset.AddFile(fn.File, a.fset.Base(), int(info.Size()))
+		file = a.fset.AddFile(f.File, a.fset.Base(), int(info.Size()))
 		setContent = true
 	}
 
-	data, err := ioutil.ReadFile(fn.File)
+	data, err := ioutil.ReadFile(f.File)
 	if err != nil {
 		panic(err)
 	}
@@ -94,9 +106,9 @@ func (fn ReportFunction) Lines() []FunctionLine {
 		file.SetLinesForContent(data)
 	}
 
-	statements := fn.Statements[:]
-	lineno := file.Line(file.Pos(fn.Start))
-	lines := strings.Split(string(data)[fn.Start:fn.End], "\n")
+	statements := f.Statements[:]
+	lineno := file.Line(file.Pos(f.Start))
+	lines := strings.Split(string(data)[f.Start:f.End], "\n")
 	fls := make([]FunctionLine, len(lines))
 
 	for i, line := range lines {
@@ -117,14 +129,6 @@ func (fn ReportFunction) Lines() []FunctionLine {
 		if statementFound && !hit {
 			hitmiss = missPrefix
 		}
-		/*
-			tr := "<tr"
-			if hitmiss == missPrefix {
-				tr += ` class="miss">`
-			} else {
-				tr += ">"
-			}
-		*/
 		fls[i] = FunctionLine{
 			Missed:     hitmiss == missPrefix,
 			LineNumber: lineno,
@@ -134,6 +138,7 @@ func (fn ReportFunction) Lines() []FunctionLine {
 	return fls
 }
 
+// ReportFunctionList is a list of functions for a report.
 type ReportFunctionList []ReportFunction
 
 func (l ReportFunctionList) Len() int {
