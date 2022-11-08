@@ -158,7 +158,7 @@ func printReport(w io.Writer, r *report) error {
 		if err != nil {
 			return eris.Wrap(err, "print report")
 		}
-		style, err := io.ReadAll(f)
+		style, err := ioutil.ReadAll(f)
 		if err != nil {
 			return eris.Wrap(err, "read style")
 		}

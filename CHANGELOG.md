@@ -1,4 +1,5 @@
 v 1.2
+  - Re-enable support for older Go compilers (1.11+). #29
   - New -d flag to output CSS content used in default theme. #22
   - Embbed custom stylesheet into final HTML document. #22
 
