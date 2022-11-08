@@ -13,7 +13,7 @@ BUILD_OPENBSD_AMD64=${BUILD_VERSION}-openbsd-amd64
 BUILD_LINUX_AMD64=${BUILD_VERSION}-linux-amd64
 BUILD_WINDOWS_AMD64=${BUILD_VERSION}-windows-amd64
 #
-GOBUILD64=GOARCH=amd64 go build
+GOBUILD64=GOARCH=amd64 go build -ldflags "all=$(GO_LDFLAGS)"
 
 all: build
 
