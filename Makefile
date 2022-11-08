@@ -1,17 +1,8 @@
-.PHONY: gocov-html build clean
+.PHONY: gocov-html build dist linux darwin windows buildall cleardist clean
 
-include version.mk
 
 BIN=gocov-html
 MAIN_CMD=github.com/matm/${BIN}/cmd/${BIN}
 
-all: build
-
-build:
-	@go build -ldflags "all=$(GO_LDFLAGS)" ${MAIN_CMD}
-
-test:
-	@go test ./...
-
-clean:
-	@rm -rf ${BIN}
+include version.mk
+include build.mk
