@@ -15,7 +15,8 @@ type Beautifier interface {
 
 type TemplateData struct {
 	CSS       string
-	Packages  ReportPackageList
 	Generated string
+	Overview  *ReportPackage
+	Packages  ReportPackageList
 	Site      string
 }

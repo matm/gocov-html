@@ -163,6 +163,20 @@ func (t defaultTheme) Template() *template.Template {
 		<p>no test files in package.</p>"
         {{else}}
         <div id="about">Generated on {{.Generated}} with <a href="{{.Site}}">gocov-html</a></div>
+        {{/* Report overview/summary available? */}}
+        {{if .Overview}}
+        <div class="funcname">Report Overview</div>
+            <table class="overview">
+            {{range $k,$rp := .Packages}}
+            <tr id="s_pkg_{{$rp.Pkg.Name}}">
+                <td><code><a href="#pkg_{{$rp.Pkg.Name}}">{{$rp.Pkg.Name}}</a></code></td>
+                <td class="percent"><code>{{printf "%.2f%%" $rp.PercentageReached}}</code></td>
+                <td class="linecount"><code>{{printf "%d" $rp.ReachedStatements}}/{{printf "%d" $rp.TotalStatements}}</code></td>
+            </tr>
+            {{end}}
+            </table>
+        </div>
+        {{end}}
         {{range $k,$rp := .Packages}}
         <div id="pkg_{{$rp.Pkg.Name}}" class="funcname">
             Package Overview: {{$rp.Pkg.Name}}
@@ -216,11 +230,19 @@ func (t defaultTheme) Template() *template.Template {
         <!--    Can be parsed by external script
                 PACKAGE:{{$rp.Pkg.Name}} DONE:{{printf "%.2f" $rp.PercentageReached}}
         -->
+        {{end}} {{/* range Packages end */}}
+
         <div id="summaryWrapper">
-        <div class="package">{{$rp.Pkg.Name}}</div>
-        <div id="totalcov">{{printf "%.2f%%" $rp.PercentageReached}}</div>
-        {{end}} {{/* range end */}}
-        {{end}}
+        {{if not .Overview}}
+            {{$rp := index .Packages 0}}
+            <div class="package">{{$rp.Pkg.Name}}</div>
+            <div id="totalcov">{{printf "%.2f%%" $rp.PercentageReached}}</div>
+        {{else}}
+            <div class="package">{{.Overview.Pkg.Name}}</div>
+            <div id="totalcov">{{printf "%.2f%%" .Overview.PercentageReached}}</div>
+        {{end}} {{/* if overview end */}}
+        </div>
+        {{end}} {{/* range if end */}}
 	</body>
 </html>
 {{end}}`

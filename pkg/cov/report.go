@@ -27,7 +27,6 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
-	"text/tabwriter"
 
 	"github.com/axw/gocov"
 	"github.com/matm/gocov-html/pkg/themes"
@@ -94,7 +93,7 @@ func buildReportPackage(pkg *gocov.Package) types.ReportPackage {
 				reached++
 			}
 		}
-		rv.Functions[i] = types.ReportFunction{fn, reached}
+		rv.Functions[i] = types.ReportFunction{Function: fn, StatementsReached: reached}
 		rv.TotalStatements += len(fn.Statements)
 		rv.ReachedStatements += reached
 	}
@@ -128,47 +127,18 @@ func printReport(w io.Writer, r *report) error {
 	data.CSS = css
 	data.Packages = reportPackages
 
-	/*
-		summaryPackage := reportPackages[0]
-			if len(reportPackages) > 1 {
-				summaryPackage = printReportOverview(w, reportPackages)
-			}
-	*/
-
-	w = tabwriter.NewWriter(w, 0, 8, 0, '\t', 0)
-	for range reportPackages {
-		// Embbed function source code
-		/* FIXME
-		for _, fn := range rp.Functions {
-			annotateFunctionSource(w, fn.Function)
+	if len(reportPackages) > 1 {
+		rv := types.ReportPackage{
+			Pkg: &gocov.Package{Name: "Report Total"},
 		}
-		*/
-
+		for _, rp := range reportPackages {
+			rv.ReachedStatements += rp.ReachedStatements
+			rv.TotalStatements += rp.TotalStatements
+		}
+		data.Overview = &rv
 	}
-
 	err := theme.Template().Execute(w, data)
 	return eris.Wrap(err, "execute template")
-}
-
-func printReportOverview(w io.Writer, reportPackages types.ReportPackageList) types.ReportPackage {
-	rv := types.ReportPackage{
-		Pkg: &gocov.Package{Name: "Report Total"},
-	}
-	fmt.Fprintf(w, "<div class=\"funcname\">Report Overview</div>")
-	fmt.Fprintf(w, "<table class=\"overview\">\n")
-	for _, rp := range reportPackages {
-		rv.ReachedStatements += rp.ReachedStatements
-		rv.TotalStatements += rp.TotalStatements
-		fmt.Fprintf(w, "<tr id=\"s_pkg_%s\"><td><code><a href=\"#pkg_%s\">%s</a></code></td><td class=\"percent\"><code>%.2f%%</code></td><td class=\"linecount\"><code>%d/%d</code></td></tr>\n",
-			rp.Pkg.Name, rp.Pkg.Name, rp.Pkg.Name, rp.PercentageReached(), rp.ReachedStatements, rp.TotalStatements)
-	}
-
-	fmt.Fprintf(w, "<tr><td><code>%s</code></td><td class=\"percent\"><code>%.2f%%</code></td><td class=\"linecount\"><code>%d/%d</code></td></tr>\n",
-		"Report Total", rv.PercentageReached(),
-		rv.ReachedStatements, rv.TotalStatements)
-	fmt.Fprintf(w, "</table>\n")
-
-	return rv
 }
 
 func exists(path string) (bool, error) {
