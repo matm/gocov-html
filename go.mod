@@ -4,6 +4,5 @@ go 1.11
 
 require (
 	github.com/axw/gocov v1.1.0
-	github.com/rotisserie/eris v0.5.4 // indirect
-	github.com/stretchr/testify v1.8.1 // indirect
+	github.com/rotisserie/eris v0.5.4
 )
