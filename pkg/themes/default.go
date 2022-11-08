@@ -146,7 +146,7 @@ func (t defaultTheme) Name() string {
 }
 
 func (t defaultTheme) Description() string {
-	return "original golang theme"
+	return "original golang theme (default)"
 }
 
 func (t defaultTheme) Template() *template.Template {
@@ -162,7 +162,7 @@ func (t defaultTheme) Template() *template.Template {
         {{if not .Packages}}
 		<p>no test files in package.</p>"
         {{else}}
-        <div id="about">Generated on {{.Generated}} with <a href="{{.Site}}">gocov-html</a></div>
+        <div id="about">Generated on {{.When}} with <a href="{{.ProjectURL}}">gocov-html</a></div>
         {{/* Report overview/summary available? */}}
         {{if .Overview}}
         <div class="funcname">Report Overview</div>

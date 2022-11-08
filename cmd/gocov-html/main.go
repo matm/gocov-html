@@ -41,6 +41,7 @@ func main() {
 	showVersion := flag.Bool("v", false, "show program version")
 	showDefaultCSS := flag.Bool("d", false, "output CSS of default theme")
 	listThemes := flag.Bool("lt", false, "list available themes")
+	theme := flag.String("t", "golang", "theme to use for rendering")
 
 	flag.Parse()
 
@@ -54,19 +55,20 @@ func main() {
 		return
 	}
 
-	// FIXME.
-	err := themes.Use("golang")
+	if *listThemes {
+		for _, th := range themes.List() {
+			fmt.Printf("%-10s -- %s\n", th.Name(), th.Description())
+		}
+		return
+	}
+
+	err := themes.Use(*theme)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("theme selection: %v", err)
 	}
 
 	if *showDefaultCSS {
 		fmt.Println(themes.Current().Data().CSS)
-		return
-	}
-
-	if *listThemes {
-		fmt.Println("THEMES")
 		return
 	}
 
