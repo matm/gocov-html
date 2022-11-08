@@ -30,6 +30,7 @@ import (
 
 	"github.com/matm/gocov-html/pkg/config"
 	"github.com/matm/gocov-html/pkg/cov"
+	"github.com/matm/gocov-html/pkg/themes"
 )
 
 func main() {
@@ -39,6 +40,9 @@ func main() {
 	css := flag.String("s", "", "path to custom CSS file")
 	showVersion := flag.Bool("v", false, "show program version")
 	showDefaultCSS := flag.Bool("d", false, "output CSS of default theme")
+	listThemes := flag.Bool("lt", false, "list available themes")
+	theme := flag.String("t", "golang", "theme to use for rendering")
+
 	flag.Parse()
 
 	if *showVersion {
@@ -51,8 +55,20 @@ func main() {
 		return
 	}
 
+	if *listThemes {
+		for _, th := range themes.List() {
+			fmt.Printf("%-10s -- %s\n", th.Name(), th.Description())
+		}
+		return
+	}
+
+	err := themes.Use(*theme)
+	if err != nil {
+		log.Fatalf("theme selection: %v", err)
+	}
+
 	if *showDefaultCSS {
-		fmt.Println(cov.DefaultCSS)
+		fmt.Println(themes.Current().Data().CSS)
 		return
 	}
 
