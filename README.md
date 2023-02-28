@@ -22,12 +22,12 @@ $ go install github.com/matm/gocov-html/cmd/gocov-html@latest
 
 Feature|CLI Flag|Version
 :---|:---|---:
-Use custom CSS file|`-s <filename>`|`1.0`
+Use custom CSS file|`-s <filename>`|`1.0.0`
 Show program version|`-v`|`1.1.1`
-Write CSS of default theme to stdout|`-d`|`1.2`
-Embbed custom CSS into final HTML document|-|`1.2`
-List available themes|`-lt`|`1.2`
-Render with a specific theme|`-t <theme>`|`1.2`
+Write CSS of default theme to stdout|`-d`|`1.2.0`
+Embbed custom CSS into final HTML document|-|`1.2.0`
+List available themes|`-lt`|`1.2.0`
+Render with a specific theme|`-t <theme>`|`1.2.0`
 
 ## Usage
 
