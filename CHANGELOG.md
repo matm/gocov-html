@@ -1,3 +1,6 @@
+v 1.3
+  - doc: fix semver in README. #36
+
 v 1.2
   - Makefile: fix missing version info during build. #33
   - Provide binaries for a variety of os/arch. #31
