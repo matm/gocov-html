@@ -21,10 +21,11 @@ jobs:
       with:
         go-version: 1.11
 
-    - name: Build
+    - name: Code generation
       run: go generate ./...
+
+    - name: Build
       run: go build -v ./cmd/gocov-html
 
     - name: Test
-      run: go generate ./...
       run: go test -v ./...
