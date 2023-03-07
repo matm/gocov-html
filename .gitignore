@@ -1,3 +1,6 @@
 /gocov-html
+/generator
 *.swp
 /*.css
+// Generated Go files
+*_gen.go

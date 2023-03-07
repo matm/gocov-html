@@ -1,0 +1,105 @@
+{{define "theme"}}
+<html>
+	<head>
+		<title>Coverage Report</title>
+		<meta charset="utf-8" />
+        {{if .Style}}
+        <style type="text/css">
+        {{.Style}}
+        </style>
+        {{end}}
+	</head>
+	<body>
+		<div id="doctitle">Coverage Report</div>
+        {{if not .Packages}}
+		<p>no test files in package.</p>"
+        {{else}}
+        <div id="about">Generated on {{.When}} with <a href="{{.ProjectURL}}">gocov-html</a></div>
+        {{/* Report overview/summary available? */}}
+        {{if .Overview}}
+        <div class="funcname">Report Overview</div>
+            <table class="overview">
+            {{range $k,$rp := .Packages}}
+            <tr id="s_pkg_{{$rp.Pkg.Name}}">
+                <td><code><a href="#pkg_{{$rp.Pkg.Name}}">{{$rp.Pkg.Name}}</a></code></td>
+                <td class="percent"><code>{{printf "%.2f%%" $rp.PercentageReached}}</code></td>
+                <td class="linecount"><code>{{printf "%d" $rp.ReachedStatements}}/{{printf "%d" $rp.TotalStatements}}</code></td>
+            </tr>
+            {{end}}
+            </table>
+        </div>
+        {{end}}
+        {{range $k,$rp := .Packages}}
+        <div id="pkg_{{$rp.Pkg.Name}}" class="funcname">
+            Package Overview: {{$rp.Pkg.Name}}
+            <span class="packageTotal">{{printf "%.2f%%" $rp.PercentageReached}}</span>
+        </div>
+        <p>
+        This is a coverage report created after analysis of the <code>{{$rp.Pkg.Name}}</code> package. It 
+        has been generated with the following command:
+        </p>
+        <pre class="cmd">gocov test {{$rp.Pkg.Name}} | gocov-html</pre>
+        <p>Here are the stats. Please select a function name to view its implementation and see what's left for testing.</p>
+
+        <table class="overview">
+        {{range $k,$f := $rp.Functions}}
+            <tr id="s_fn_{{$f.Name}}">
+                <td>
+                    <code><a href="#fn_{{$f.Name}}">{{$f.Name}}(...)</a></code>
+                </td>
+                <td>
+                    <code>{{$rp.Pkg.Name}}/{{$f.ShortFileName}}</code>
+                </td>
+                <td class="percent">
+                    <code>{{printf "%.2f%%" $f.CoveragePercent}}</code>
+                </td>
+                <td class="linecount">
+                    <code>{{$f.StatementsReached}}/{{len $f.Statements}}</code>
+                </td>
+            </tr>
+        {{end}}
+        </table>
+
+        {{/* Functions source code here */}}
+        {{range $k,$f := $rp.Functions}}
+        <div class="funcname" id="fn_{{$f.Name}}">func {{$f.Name}}</div>
+        <div class="info">
+            <a href="#s_fn_{{$f.Name}}">Back</a>
+            <p>In <code>{{$f.File}}</code>:</p>
+        </div>
+        <table class="listing">
+            {{range $p,$info := $f.Lines}}
+            <tr{{if $info.Missed}} class="miss"{{end}}>
+                <td>{{$info.LineNumber}}</td>
+                <td>
+                    <code><pre>{{$info.Code}}</pre></code>
+                </td>
+            </tr>
+            {{end}}
+        </table>
+        {{end}} {{/* range function lines */}}
+
+        <!--    Can be parsed by external script
+                PACKAGE:{{$rp.Pkg.Name}} DONE:{{printf "%.2f" $rp.PercentageReached}}
+        -->
+        {{end}} {{/* range Packages end */}}
+
+        <div id="summaryWrapper">
+        {{if not .Overview}}
+            {{$rp := index .Packages 0}}
+            <div class="package">{{$rp.Pkg.Name}}</div>
+            <div id="totalcov">{{printf "%.2f%%" $rp.PercentageReached}}</div>
+        {{else}}
+            <div class="package">{{.Overview.Pkg.Name}}</div>
+            <div id="totalcov">{{printf "%.2f%%" .Overview.PercentageReached}}</div>
+        {{end}} {{/* if overview end */}}
+        </div>
+        {{end}} {{/* range if end */}}
+        {{if .Script}}
+        <script type="text/javascript">
+        {{.Script}}
+        </script>
+        {{end}}
+	</body>
+</html>
+{{end}}

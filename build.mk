@@ -71,10 +71,13 @@ cleardist:
 	@rm -rf ${DISTDIR} && mkdir -p ${BINDIR} && mkdir -p ${BUILDDIR}
 
 build:
+	@go build ${GENERATOR_CMD}
+	@go generate ./...
 	@go build -ldflags "all=$(GO_LDFLAGS)" ${MAIN_CMD}
 
 test:
 	@go test ./...
 
 clean:
-	@rm -rf ${BIN} ${BUILDDIR} ${DISTDIR}
+	@find pkg -name \*_gen.go -delete
+	@rm -rf ${BIN} ${GENERATOR_BIN} ${BUILDDIR} ${DISTDIR}
