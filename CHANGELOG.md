@@ -1,4 +1,5 @@
 v 1.3
+  - New kit theme. #28
   - refac: generate Go code to render themes. #38
   - doc: fix semver in README. #36
 

@@ -7,6 +7,7 @@ import (
 
 var themes = []types.Beautifier{
 	defaultTheme{},
+	kitTheme{},
 }
 
 // Theme to use for rendering.
