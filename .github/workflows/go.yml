@@ -22,7 +22,9 @@ jobs:
         go-version: 1.11
 
     - name: Build
+      run: go generate ./...
       run: go build -v ./cmd/gocov-html
 
     - name: Test
+      run: go generate ./...
       run: go test -v ./...
