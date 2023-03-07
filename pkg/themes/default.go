@@ -1,6 +1,6 @@
 package themes
 
-//go:generate go run generator.go
+//go:generate ../../generator
 
 import (
 	"github.com/matm/gocov-html/pkg/types"
