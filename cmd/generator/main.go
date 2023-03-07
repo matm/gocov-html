@@ -107,22 +107,27 @@ func render(p *params) error {
 	}
 	// Contains all stylesheets' data.
 	var allStyles bytes.Buffer
-	for _, css := range p.assets.Stylesheets {
-		style, err := ioutil.ReadFile(path.Join(baseThemeDir, css))
-		if err != nil {
-			return err
-		}
-		fmt.Fprintf(&allStyles, "%#v", style)
-	}
-
 	// Contains all scripts' data.
 	var allScripts bytes.Buffer
-	for _, script := range p.assets.Scripts {
-		js, err := ioutil.ReadFile(path.Join(baseThemeDir, script))
-		if err != nil {
-			return err
+
+	type static struct {
+		buf    *bytes.Buffer
+		assets []string
+	}
+
+	for _, st := range []static{
+		{&allStyles, p.assets.Stylesheets},
+		{&allScripts, p.assets.Scripts},
+	} {
+		for _, asset := range st.assets {
+			raw, err := ioutil.ReadFile(path.Join(baseThemeDir, asset))
+			if err != nil {
+				return err
+			}
+			// Write a slice of bytes to deal with any invalid character.
+			// Later converted to a string before template rendering.
+			fmt.Fprintf(st.buf, "%#v", raw)
 		}
-		fmt.Fprintf(&allScripts, "%#v", js)
 	}
 	t, err := template.New("").Parse(tmpl)
 	if err != nil {
