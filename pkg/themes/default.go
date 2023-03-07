@@ -10,7 +10,7 @@ type defaultTheme struct{}
 
 func (t defaultTheme) Assets() types.StaticAssets {
 	return types.StaticAssets{
-		Stylesheets: []string{"style.css", "toto.css"},
+		Stylesheets: []string{"style.css"},
 		Index:       "index.html",
 	}
 }
