@@ -3,7 +3,11 @@
 	<head>
 		<title>Coverage Report</title>
 		<meta charset="utf-8" />
-		{{.CSS}}
+        {{if .Style}}
+        <style type="text/css">
+        {{.Style}}
+        </style>
+        {{end}}
 	</head>
 	<body>
 		<div id="doctitle">Coverage Report</div>
@@ -91,6 +95,11 @@
         {{end}} {{/* if overview end */}}
         </div>
         {{end}} {{/* range if end */}}
+        {{if .Script}}
+        <script type="text/javascript">
+        {{.Script}}
+        </script>
+        {{end}}
 	</body>
 </html>
 {{end}}

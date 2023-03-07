@@ -106,7 +106,7 @@ func printReport(w io.Writer, r *report) error {
 	theme := themes.Current()
 	data := theme.Data()
 
-	css := data.CSS
+	css := data.Style
 	if len(r.stylesheet) > 0 {
 		// Inline CSS.
 		f, err := os.Open(r.stylesheet)
@@ -124,7 +124,7 @@ func printReport(w io.Writer, r *report) error {
 		reportPackages[i] = buildReportPackage(pkg)
 	}
 
-	data.CSS = css
+	data.Style = css
 	data.Packages = reportPackages
 
 	if len(reportPackages) > 1 {

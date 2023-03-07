@@ -28,12 +28,17 @@ import (
 )
 
 func (t defaultTheme) Data() *types.TemplateData {
-	css := {{.Style}}
-	return &types.TemplateData{
-		CSS:        css,
+	td:= &types.TemplateData{
 		When:       time.Now().Format(time.RFC822Z),
 		ProjectURL: types.ProjectURL,
 	}
+	{{if .Style}}
+	td.Style = {{.Style}}
+	{{end}}
+	{{if .Script}}
+	td.Script = {{.Script}}
+	{{end}}
+	return td
 }
 
 func (t defaultTheme) Template() *template.Template {
@@ -71,7 +76,12 @@ func inspect(name string, theme *string, assets *types.StaticAssets) error {
 					case "Index":
 						tmplName := kv.Value.(*ast.BasicLit).Value
 						assets.Index = strings.Replace(tmplName, `"`, "", -1)
-						// TODO: case for "Scripts".
+					case "Scripts":
+						elems := kv.Value.(*ast.CompositeLit).Elts
+						for _, elem := range elems {
+							script := elem.(*ast.BasicLit).Value
+							assets.Scripts = append(assets.Scripts, strings.Replace(script, `"`, "", -1))
+						}
 					}
 				}
 			}
@@ -101,17 +111,29 @@ func render(name, theme string, assets types.StaticAssets) error {
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(&allStyles, "`%s`\n", style)
+		fmt.Fprintf(&allStyles, "`%s`", style)
+	}
+
+	// Contains all scripts' data.
+	var allScripts bytes.Buffer
+	for _, script := range assets.Scripts {
+		js, err := ioutil.ReadFile(path.Join(baseThemeDir, script))
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(&allScripts, "`%s`", js)
 	}
 	t, err := template.New("").Parse(tmpl)
 	if err != nil {
 		return err
 	}
 	type data struct {
+		Script   string
 		Style    string
 		Template string
 	}
 	err = t.Execute(outFile, &data{
+		Script:   allScripts.String(),
 		Style:    allStyles.String(),
 		Template: "`" + string(index) + "`"},
 	)

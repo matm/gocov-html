@@ -68,7 +68,7 @@ func main() {
 	}
 
 	if *showDefaultCSS {
-		fmt.Println(themes.Current().Data().CSS)
+		fmt.Println(themes.Current().Data().Style)
 		return
 	}
 

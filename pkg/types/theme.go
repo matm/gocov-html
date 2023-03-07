@@ -19,8 +19,10 @@ type Beautifier interface {
 
 // TemplateData has all the fields needed by the the HTML template for rendering.
 type TemplateData struct {
-	// CSS is the stylesheet content that will be embedded in the HTML page.
-	CSS string
+	// Style is the stylesheet content that will be embedded in the HTML page.
+	Style string
+	// Script is the javascript content that will be embedded in the HTML page.
+	Script string
 	// When is the date time of report generation.
 	When string
 	// Overview holds data used for an additional header in case of multiple Go packages
