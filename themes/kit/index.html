@@ -8,12 +8,9 @@
 	<meta name="description" content="Responsive Admin &amp; Dashboard Template based on Bootstrap 5">
 	<meta name="author" content="AdminKit">
 	<meta name="keywords" content="adminkit, bootstrap, bootstrap 5, admin, dashboard, template, responsive, css, sass, html, theme, front-end, ui kit, web">
-
 	<link rel="preconnect" href="https://fonts.gstatic.com">
 	<link rel="shortcut icon" href="img/icons/icon-48x48.png" />
-
-	<link rel="canonical" href="https://demo-basic.adminkit.io/pages-blank.html" />
-	<title>Blank Page | AdminKit Demo</title>
+	<title>gocov-html</title>
 	{{if .Style}}
 	<style type="text/css">
 	{{.Style}}
@@ -26,107 +23,26 @@
 	<div class="wrapper">
 		<nav id="sidebar" class="sidebar js-sidebar">
 			<div class="sidebar-content js-simplebar">
-				<a class="sidebar-brand" href="index.html">
-          <span class="align-middle">AdminKit</span>
-        </a>
-
+				<a class="sidebar-brand" href="#">
+					<span class="align-middle">gocov-html</span>
+				</a>
 				<ul class="sidebar-nav">
-					<li class="sidebar-header">
-						Pages
-					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" href="index.html">
-              <i class="align-middle" data-feather="sliders"></i> <span class="align-middle">Dashboard</span>
-            </a>
-					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" href="pages-profile.html">
-              <i class="align-middle" data-feather="user"></i> <span class="align-middle">Profile</span>
-            </a>
-					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" href="pages-sign-in.html">
-              <i class="align-middle" data-feather="log-in"></i> <span class="align-middle">Sign In</span>
-            </a>
-					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" href="pages-sign-up.html">
-              <i class="align-middle" data-feather="user-plus"></i> <span class="align-middle">Sign Up</span>
-            </a>
-					</li>
-
 					<li class="sidebar-item active">
-						<a class="sidebar-link" href="pages-blank.html">
-              <i class="align-middle" data-feather="book"></i> <span class="align-middle">Blank</span>
-            </a>
+						<a class="sidebar-link" href="#">
+							<i class="align-middle" data-feather="book"></i> <span class="align-middle">Dashboard</span>
+						</a>
 					</li>
-
 					<li class="sidebar-header">
-						Tools & Components
+						Packages
 					</li>
-
+					{{range $k,$rp := .Packages}}
 					<li class="sidebar-item">
-						<a class="sidebar-link" href="ui-buttons.html">
-              <i class="align-middle" data-feather="square"></i> <span class="align-middle">Buttons</span>
-            </a>
+						<a class="sidebar-link" href="#">
+							<i class="align-middle" data-feather="package"></i> <span class="align-middle">{{$rp.Pkg.Name}}</span>
+						</a>
 					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" href="ui-forms.html">
-              <i class="align-middle" data-feather="check-square"></i> <span class="align-middle">Forms</span>
-            </a>
-					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" href="ui-cards.html">
-              <i class="align-middle" data-feather="grid"></i> <span class="align-middle">Cards</span>
-            </a>
-					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" href="ui-typography.html">
-              <i class="align-middle" data-feather="align-left"></i> <span class="align-middle">Typography</span>
-            </a>
-					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" href="icons-feather.html">
-              <i class="align-middle" data-feather="coffee"></i> <span class="align-middle">Icons</span>
-            </a>
-					</li>
-
-					<li class="sidebar-header">
-						Plugins & Addons
-					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" href="charts-chartjs.html">
-              <i class="align-middle" data-feather="bar-chart-2"></i> <span class="align-middle">Charts</span>
-            </a>
-					</li>
-
-					<li class="sidebar-item">
-						<a class="sidebar-link" href="maps-google.html">
-              <i class="align-middle" data-feather="map"></i> <span class="align-middle">Maps</span>
-            </a>
-					</li>
+					{{end}}
 				</ul>
-
-				<div class="sidebar-cta">
-					<div class="sidebar-cta-content">
-						<strong class="d-inline-block mb-2">Upgrade to Pro</strong>
-						<div class="mb-3 text-sm">
-							Are you looking for more components? Check out our premium version.
-						</div>
-						<div class="d-grid">
-							<a href="upgrade-to-pro.html" class="btn btn-primary">Upgrade to Pro</a>
-						</div>
-					</div>
-				</div>
 			</div>
 		</nav>
 
@@ -270,45 +186,111 @@
 								</div>
 							</div>
 						</li>
-						<li class="nav-item dropdown">
-							<a class="nav-icon dropdown-toggle d-inline-block d-sm-none" href="#" data-bs-toggle="dropdown">
-                <i class="align-middle" data-feather="settings"></i>
-              </a>
-
-							<a class="nav-link dropdown-toggle d-none d-sm-inline-block" href="#" data-bs-toggle="dropdown">
-                <img src="img/avatars/avatar.jpg" class="avatar img-fluid rounded me-1" alt="Charles Hall" /> <span class="text-dark">Charles Hall</span>
-              </a>
-							<div class="dropdown-menu dropdown-menu-end">
-								<a class="dropdown-item" href="pages-profile.html"><i class="align-middle me-1" data-feather="user"></i> Profile</a>
-								<a class="dropdown-item" href="#"><i class="align-middle me-1" data-feather="pie-chart"></i> Analytics</a>
-								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="index.html"><i class="align-middle me-1" data-feather="settings"></i> Settings & Privacy</a>
-								<a class="dropdown-item" href="#"><i class="align-middle me-1" data-feather="help-circle"></i> Help Center</a>
-								<div class="dropdown-divider"></div>
-								<a class="dropdown-item" href="#">Log out</a>
-							</div>
-						</li>
 					</ul>
 				</div>
 			</nav>
 
 			<main class="content">
 				<div class="container-fluid p-0">
-
-					<h1 class="h3 mb-3">Blank Page</h1>
-
+					<h1 class="h3 mb-3">Dashboard</h1>
 					<div class="row">
-						<div class="col-12">
+						{{range $k,$rp := .Packages}}
+						<div class="col-sm-3">
 							<div class="card">
-								<div class="card-header">
-									<h5 class="card-title mb-0">Empty card</h5>
-								</div>
 								<div class="card-body">
+									<div class="row">
+										<div class="col mt-0">
+											<h5 class="card-title">{{$rp.Pkg.Name}}</h5>
+										</div>
+
+										<div class="col-auto">
+											<div class="stat text-primary">
+												<i class="align-middle" data-feather="package"></i>
+											</div>
+										</div>
+									</div>
+									<h1 class="mt-1 mb-3">{{printf "%.1f%%" $rp.PercentageReached}}</h1>
+									<div class="mb-0">
+										<span class="text-success"> <i class="mdi mdi-arrow-bottom-right"></i> {{printf "%d" $rp.ReachedStatements}}/{{printf "%d" $rp.TotalStatements}}</span>
+										<span class="text-muted">statements reached</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						{{end}}
+						<!-- Shell command -->
+						<div class="col-sm-6">
+							<div class="card">
+								<div class="card-body">
+									<div class="row">
+										<div class="col mt-0">
+											<h5 class="card-title">Shell Command</h5>
+										</div>
+
+										<div class="col-auto">
+											<div class="stat text-primary">
+												<i class="align-middle" data-feather="terminal"></i>
+											</div>
+										</div>
+									</div>
+									<div class="mb-0">
+										<samp class="text-muted h6">$ gocov test {{range $k,$rp := .Packages}}{{$rp.Pkg.Name}} {{end}} | gocov-html -t golang</samp>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 
+					{{range $k,$rp := .Packages}}
+					<h1 class="h3 mb-3">Package <strong>{{$rp.Pkg.Name}}</strong></h1>
+					<div class="row">
+						<div class="col-sm-3">
+							<div class="card">
+								<div class="card-body">
+									<div class="row">
+										<div class="col mt-0">
+											<h5 class="card-title">Coverage</h5>
+										</div>
+										<div class="col-auto">
+											<div class="stat text-primary">
+												<i class="align-middle" data-feather="code"></i>
+											</div>
+										</div>
+									</div>
+									<h1 class="mt-1 mb-3">{{printf "%.1f%%" $rp.PercentageReached}}</h1>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-sm-6">
+							<div class="card flex-fill">
+								<div class="card-header">
+									<h5 class="card-title mb-0">Functions</h5>
+								</div>
+								<table class="table table-hover my-0">
+									<thead>
+										<tr>
+											<th>Name</th>
+											<th class="d-none d-xl-table-cell">File</th>
+											<th class="d-none d-xl-table-cell">Coverage</th>
+											<th>Statements</th>
+										</tr>
+									</thead>
+									<tbody>
+										{{range $k,$f := $rp.Functions}}
+										<tr>
+											<td>{{$f.Name}}(...)</td>
+											<td class="d-none d-xl-table-cell">{{$f.ShortFileName}}</td>
+											<td><span class="badge bg-success">{{printf "%.1f%%" $f.CoveragePercent}}</span></td>
+											<td>{{$f.StatementsReached}}/{{len $f.Statements}}</td>
+										</tr>
+										{{end}}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					{{end}}
 				</div>
 			</main>
 
@@ -317,7 +299,7 @@
 					<div class="row text-muted">
 						<div class="col-6 text-start">
 							<p class="mb-0">
-								<a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>AdminKit</strong></a> - <a class="text-muted" href="https://adminkit.io/" target="_blank"><strong>Bootstrap Admin Template</strong></a>								&copy;
+								<a class="text-muted" href="{{.ProjectURL}}" target="_blank"><strong>gocov-html</strong></a> - Generated on {{.When}}
 							</p>
 						</div>
 						<div class="col-6 text-end">

@@ -27,6 +27,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+	"time"
 
 	"github.com/axw/gocov"
 	"github.com/matm/gocov-html/pkg/themes"
@@ -153,6 +154,7 @@ func exists(path string) (bool, error) {
 // is an absolute path to a custom stylesheet. Use an empty
 // string to use the default stylesheet available.
 func HTMLReportCoverage(r io.Reader, css string) error {
+	t0 := time.Now()
 	report := newReport()
 
 	// Custom stylesheet?
@@ -180,5 +182,6 @@ func HTMLReportCoverage(r io.Reader, css string) error {
 	}
 	fmt.Println()
 	err = printReport(os.Stdout, report)
+	fmt.Fprintf(os.Stderr, "Took %v\n", time.Since(t0))
 	return eris.Wrap(err, "HTML report")
 }
