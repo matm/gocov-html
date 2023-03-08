@@ -19,6 +19,8 @@ type Beautifier interface {
 
 // TemplateData has all the fields needed by the the HTML template for rendering.
 type TemplateData struct {
+	// Command is the shell command used to generate the HTML report.
+	Command string
 	// Style is the stylesheet content that will be embedded in the HTML page.
 	Style string
 	// Script is the javascript content that will be embedded in the HTML page.

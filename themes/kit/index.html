@@ -108,7 +108,7 @@
 								<div class="card-body">
 									<div class="row">
 										<div class="col mt-0">
-											<h5 class="card-title">Generated with</h5>
+											<h5 class="card-title">Generated With</h5>
 										</div>
 										<div class="col-auto">
 											<div class="stat text-primary">
@@ -117,7 +117,7 @@
 										</div>
 									</div>
 									<div class="mb-0">
-										<code>$ gocov test {{range $k,$rp := .Packages}}{{$rp.Pkg.Name}} {{end}} | gocov-html -t golang</code>
+										<code>$ {{.Command}}</code>
 									</div>
 								</div>
 							</div>
