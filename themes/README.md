@@ -12,7 +12,7 @@ $ gocov test strings | gocov-html -t golang > strings.html
 
 ## kit
 
-Uses the [AdminKit]() theme:
+Uses the [AdminKit](https://adminkit.io) theme:
 
 ```shell
 $ gocov test encoding/csv strings | gocov-html -t kit > strings.html
