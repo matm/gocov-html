@@ -22,24 +22,23 @@
             {{range $k,$rp := .Packages}}
             <tr id="s_pkg_{{$rp.Pkg.Name}}">
                 <td><code><a href="#pkg_{{$rp.Pkg.Name}}">{{$rp.Pkg.Name}}</a></code></td>
-                <td class="percent"><code>{{printf "%.2f%%" $rp.PercentageReached}}</code></td>
+                <td class="percent"><code>{{printf "%.1f%%" $rp.PercentageReached}}</code></td>
                 <td class="linecount"><code>{{printf "%d" $rp.ReachedStatements}}/{{printf "%d" $rp.TotalStatements}}</code></td>
             </tr>
             {{end}}
             </table>
+            <p>
+            This coverage report has been generated with the following command:
+            </p>
+            <pre class="cmd">{{.Command}}</pre>
         </div>
         {{end}}
         {{range $k,$rp := .Packages}}
         <div id="pkg_{{$rp.Pkg.Name}}" class="funcname">
             Package Overview: {{$rp.Pkg.Name}}
-            <span class="packageTotal">{{printf "%.2f%%" $rp.PercentageReached}}</span>
+            <span class="packageTotal">{{printf "%.1f%%" $rp.PercentageReached}}</span>
         </div>
-        <p>
-        This is a coverage report created after analysis of the <code>{{$rp.Pkg.Name}}</code> package. It 
-        has been generated with the following command:
-        </p>
-        <pre class="cmd">gocov test {{$rp.Pkg.Name}} | gocov-html</pre>
-        <p>Here are the stats. Please select a function name to view its implementation and see what's left for testing.</p>
+        <p>Please select a function to see what's left for testing.</p>
 
         <table class="overview">
         {{range $k,$f := $rp.Functions}}
@@ -51,7 +50,7 @@
                     <code>{{$rp.Pkg.Name}}/{{$f.ShortFileName}}</code>
                 </td>
                 <td class="percent">
-                    <code>{{printf "%.2f%%" $f.CoveragePercent}}</code>
+                    <code>{{printf "%.1f%%" $f.CoveragePercent}}</code>
                 </td>
                 <td class="linecount">
                     <code>{{$f.StatementsReached}}/{{len $f.Statements}}</code>
@@ -80,7 +79,7 @@
         {{end}} {{/* range function lines */}}
 
         <!--    Can be parsed by external script
-                PACKAGE:{{$rp.Pkg.Name}} DONE:{{printf "%.2f" $rp.PercentageReached}}
+                PACKAGE:{{$rp.Pkg.Name}} DONE:{{printf "%.1f" $rp.PercentageReached}}
         -->
         {{end}} {{/* range Packages end */}}
 
@@ -88,10 +87,10 @@
         {{if not .Overview}}
             {{$rp := index .Packages 0}}
             <div class="package">{{$rp.Pkg.Name}}</div>
-            <div id="totalcov">{{printf "%.2f%%" $rp.PercentageReached}}</div>
+            <div id="totalcov">{{printf "%.1f%%" $rp.PercentageReached}}</div>
         {{else}}
             <div class="package">{{.Overview.Pkg.Name}}</div>
-            <div id="totalcov">{{printf "%.2f%%" .Overview.PercentageReached}}</div>
+            <div id="totalcov">{{printf "%.1f%%" .Overview.PercentageReached}}</div>
         {{end}} {{/* if overview end */}}
         </div>
         {{end}} {{/* range if end */}}

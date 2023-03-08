@@ -1,0 +1,10 @@
+.codex {
+    word-wrap: break-word;
+    font-size: 100%;
+}
+
+.loc {
+    word-wrap: break-word;
+    font-size: 110%;
+    margin: 0px;
+}

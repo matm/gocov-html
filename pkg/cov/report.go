@@ -27,6 +27,8 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+	"strings"
+	"time"
 
 	"github.com/axw/gocov"
 	"github.com/matm/gocov-html/pkg/themes"
@@ -120,12 +122,15 @@ func printReport(w io.Writer, r *report) error {
 		css = string(style)
 	}
 	reportPackages := make(types.ReportPackageList, len(r.packages))
+	pkgNames := make([]string, len(r.packages))
 	for i, pkg := range r.packages {
 		reportPackages[i] = buildReportPackage(pkg)
+		pkgNames[i] = pkg.Name
 	}
 
 	data.Style = css
 	data.Packages = reportPackages
+	data.Command = fmt.Sprintf("gocov test %s | gocov-html -t %s", strings.Join(pkgNames, " "), theme.Name())
 
 	if len(reportPackages) > 1 {
 		rv := types.ReportPackage{
@@ -153,6 +158,7 @@ func exists(path string) (bool, error) {
 // is an absolute path to a custom stylesheet. Use an empty
 // string to use the default stylesheet available.
 func HTMLReportCoverage(r io.Reader, css string) error {
+	t0 := time.Now()
 	report := newReport()
 
 	// Custom stylesheet?
@@ -180,5 +186,6 @@ func HTMLReportCoverage(r io.Reader, css string) error {
 	}
 	fmt.Println()
 	err = printReport(os.Stdout, report)
+	fmt.Fprintf(os.Stderr, "Took %v\n", time.Since(t0))
 	return eris.Wrap(err, "HTML report")
 }

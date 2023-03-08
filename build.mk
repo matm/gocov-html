@@ -71,9 +71,10 @@ cleardist:
 	@rm -rf ${DISTDIR} && mkdir -p ${BINDIR} && mkdir -p ${BUILDDIR}
 
 build:
-	@go build ${GENERATOR_CMD}
-	@go generate ./...
-	@go build -ldflags "all=$(GO_LDFLAGS)" ${MAIN_CMD}
+	go build ${GENERATOR_CMD} && \
+		go generate ./...
+	@echo "building ..." && \
+		go build -ldflags "all=$(GO_LDFLAGS)" ${MAIN_CMD}
 
 test:
 	@go test ./...

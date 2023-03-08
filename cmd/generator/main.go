@@ -27,40 +27,41 @@ import (
 	"github.com/matm/gocov-html/pkg/types"
 )
 
-func (t defaultTheme) Data() *types.TemplateData {
+func (t {{.Type}}) Data() *types.TemplateData {
 	td:= &types.TemplateData{
-		When:       time.Now().Format(time.RFC822Z),
+		When:       time.Now().Format(time.RFC1123),
 		ProjectURL: types.ProjectURL,
 	}
 	{{if .Style}}
-	td.Style = {{.Style}}
+	td.Style = string({{.Style}})
 	{{end}}
 	{{if .Script}}
-	td.Script = {{.Script}}
+	td.Script = string({{.Script}})
 	{{end}}
 	return td
 }
 
-func (t defaultTheme) Template() *template.Template {
+func (t {{.Type}}) Template() *template.Template {
 	tmpl := {{.Template}}
 	p := template.Must(template.New("theme").Parse(tmpl))
 	return p
 }
 `
 
-func inspect(name string, theme *string, assets *types.StaticAssets) error {
+func inspect(p *params) error {
 	fset := token.NewFileSet()
-	token, err := parser.ParseFile(fset, name, nil, parser.ParseComments)
+	token, err := parser.ParseFile(fset, p.filename, nil, parser.ParseComments)
 	if err != nil {
 		return err
 	}
 	ast.Inspect(token, func(n ast.Node) bool {
 		fn, ok := n.(*ast.FuncDecl)
 		if ok {
+			p.rtype = fn.Recv.List[0].Type.(*ast.Ident).Name
 			switch fn.Name.Name {
 			case "Name":
-				*theme = fn.Body.List[0].(*ast.ReturnStmt).Results[0].(*ast.BasicLit).Value
-				*theme = strings.Replace(*theme, `"`, "", -1)
+				p.theme = fn.Body.List[0].(*ast.ReturnStmt).Results[0].(*ast.BasicLit).Value
+				p.theme = strings.Replace(p.theme, `"`, "", -1)
 			case "Assets":
 				es := fn.Body.List[0].(*ast.ReturnStmt).Results[0].(*ast.CompositeLit).Elts
 				for _, e := range es {
@@ -71,16 +72,16 @@ func inspect(name string, theme *string, assets *types.StaticAssets) error {
 						elems := kv.Value.(*ast.CompositeLit).Elts
 						for _, elem := range elems {
 							sheet := elem.(*ast.BasicLit).Value
-							assets.Stylesheets = append(assets.Stylesheets, strings.Replace(sheet, `"`, "", -1))
+							p.assets.Stylesheets = append(p.assets.Stylesheets, strings.Replace(sheet, `"`, "", -1))
 						}
 					case "Index":
 						tmplName := kv.Value.(*ast.BasicLit).Value
-						assets.Index = strings.Replace(tmplName, `"`, "", -1)
+						p.assets.Index = strings.Replace(tmplName, `"`, "", -1)
 					case "Scripts":
 						elems := kv.Value.(*ast.CompositeLit).Elts
 						for _, elem := range elems {
 							script := elem.(*ast.BasicLit).Value
-							assets.Scripts = append(assets.Scripts, strings.Replace(script, `"`, "", -1))
+							p.assets.Scripts = append(p.assets.Scripts, strings.Replace(script, `"`, "", -1))
 						}
 					}
 				}
@@ -92,36 +93,46 @@ func inspect(name string, theme *string, assets *types.StaticAssets) error {
 	return nil
 }
 
-func render(name, theme string, assets types.StaticAssets) error {
-	baseThemeDir := path.Join("..", "..", "themes", theme)
-	out := strings.Replace(name, ".go", "_gen.go", 1)
+func render(p *params) error {
+	baseThemeDir := path.Join("..", "..", "themes", p.theme)
+	out := strings.Replace(p.filename, ".go", "_gen.go", 1)
 	outFile, err := os.Create(out)
 	if err != nil {
 		return err
 	}
 	defer outFile.Close()
-	index, err := ioutil.ReadFile(path.Join(baseThemeDir, assets.Index))
+	index, err := ioutil.ReadFile(path.Join(baseThemeDir, p.assets.Index))
 	if err != nil {
 		return err
 	}
 	// Contains all stylesheets' data.
 	var allStyles bytes.Buffer
-	for _, css := range assets.Stylesheets {
-		style, err := ioutil.ReadFile(path.Join(baseThemeDir, css))
-		if err != nil {
-			return err
-		}
-		fmt.Fprintf(&allStyles, "`%s`", style)
-	}
-
 	// Contains all scripts' data.
 	var allScripts bytes.Buffer
-	for _, script := range assets.Scripts {
-		js, err := ioutil.ReadFile(path.Join(baseThemeDir, script))
-		if err != nil {
-			return err
+
+	type static struct {
+		buf    *bytes.Buffer
+		assets []string
+	}
+
+	for _, st := range []static{
+		{&allStyles, p.assets.Stylesheets},
+		{&allScripts, p.assets.Scripts},
+	} {
+		var buf bytes.Buffer
+		for _, asset := range st.assets {
+			raw, err := ioutil.ReadFile(path.Join(baseThemeDir, asset))
+			if err != nil {
+				return err
+			}
+			_, err = buf.Write(raw)
+			if err != nil {
+				return err
+			}
 		}
-		fmt.Fprintf(&allScripts, "`%s`", js)
+		// Write a slice of bytes to deal with any invalid character.
+		// Later converted to a string before template rendering.
+		fmt.Fprintf(st.buf, "%#v", buf.Bytes())
 	}
 	t, err := template.New("").Parse(tmpl)
 	if err != nil {
@@ -131,13 +142,22 @@ func render(name, theme string, assets types.StaticAssets) error {
 		Script   string
 		Style    string
 		Template string
+		Type     string
 	}
 	err = t.Execute(outFile, &data{
 		Script:   allScripts.String(),
 		Style:    allStyles.String(),
-		Template: "`" + string(index) + "`"},
-	)
+		Template: "`" + string(index) + "`",
+		Type:     p.rtype,
+	})
 	return err
+}
+
+type params struct {
+	filename string
+	rtype    string // Receiver type.
+	theme    string
+	assets   types.StaticAssets
 }
 
 func main() {
@@ -146,13 +166,12 @@ func main() {
 		fmt.Println("Must be run by the \"go generate\" tool, like \"go generate ./...\"")
 		os.Exit(1)
 	}
-	assets := new(types.StaticAssets)
-	theme := new(string)
-	err := inspect(name, theme, assets)
+	p := &params{filename: name}
+	err := inspect(p)
 	if err != nil {
 		log.Fatal(err)
 	}
-	if err := render(name, *theme, *assets); err != nil {
+	if err := render(p); err != nil {
 		log.Fatal(err)
 	}
 }
