@@ -28,7 +28,7 @@
 				</a>
 				<ul class="sidebar-nav">
 					<li class="sidebar-item active">
-						<a class="sidebar-link" href="#s-dashboard">
+						<a class="sidebar-link" href="#s-dashboard" onclick="hover(this)">
 							<i class="align-middle" data-feather="book"></i> <span class="align-middle">Dashboard</span>
 						</a>
 					</li>
@@ -37,7 +37,7 @@
 					</li>
 					{{range $k,$rp := .Packages}}
 					<li class="sidebar-item" id="sb-{{$rp.Pkg.Name}}">
-						<a class="sidebar-link" href="#pkg-{{$rp.Pkg.Name}}" onclick="">
+						<a class="sidebar-link" href="#pkg-{{$rp.Pkg.Name}}" onclick="hover(this)">
 							<i class="align-middle" data-feather="package"></i> <span class="align-middle">{{$rp.Pkg.Name}}</span>
 						</a>
 					</li>
@@ -228,6 +228,24 @@
 	{{if .Script}}
 	<script type="text/javascript">
 	{{.Script}}
+	var getSiblings = function (elem) {
+		var siblings = [];
+		var sibling = elem.parentNode.firstChild;
+		while (sibling) {
+			if (sibling.nodeType === 1 && sibling !== elem) {
+				siblings.push(sibling);
+			}
+			sibling = sibling.nextSibling
+		}
+		return siblings;
+	};
+	function hover(e) {
+		let sibs = getSiblings(e.parentNode);
+		sibs.forEach(function(e){
+			e.classList.remove("active")
+		});
+		e.parentNode.classList.add("active")
+	}
 	</script>
 	{{end}}
 </body>
