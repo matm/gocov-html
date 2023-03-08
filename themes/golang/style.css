@@ -74,10 +74,6 @@ span.packageTotal {
     font-size: 10px;
 }
 
-table tr:last-child td {
-    font-weight: bold;
-}
-
 .functitle,
 .funcname {
     text-align: center;
