@@ -29,7 +29,7 @@ import (
 
 func (t {{.Type}}) Data() *types.TemplateData {
 	td:= &types.TemplateData{
-		When:       time.Now().Format(time.RFC822Z),
+		When:       time.Now().Format(time.RFC1123),
 		ProjectURL: types.ProjectURL,
 	}
 	{{if .Style}}
