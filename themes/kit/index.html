@@ -1,3 +1,4 @@
+{{define "theme"}}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -279,9 +280,9 @@
 									</thead>
 									<tbody>
 										{{range $k,$f := $rp.Functions}}
-										<tr>
-											<td>{{$f.Name}}(...)</td>
-											<td class="d-none d-xl-table-cell">{{$f.ShortFileName}}</td>
+										<tr id="s_fn_{{$f.Name}}">
+											<td><code><a href="#fn_{{$f.Name}}">{{$f.Name}}(...)</a></code></td>
+											<td class="d-none d-xl-table-cell"><code>{{$f.ShortFileName}}</code></td>
 											<td><span class="badge bg-success">{{printf "%.1f%%" $f.CoveragePercent}}</span></td>
 											<td>{{$f.StatementsReached}}/{{len $f.Statements}}</td>
 										</tr>
@@ -290,6 +291,34 @@
 								</table>
 							</div>
 						</div>
+					</div>
+					{{/* Functions source code here */}}
+					<div class="row">
+					{{range $k,$f := $rp.Functions}}
+						<div class="col-sm-12">
+							<div class="card flex-fill">
+								<div class="card-header">
+									<h5 class="card-title mb-0" id="fn_{{$f.Name}}"><code class="codex">func {{$f.Name}}(...)</code>
+									<a href="#s_fn_{{$f.Name}}">
+										<i class="align-middle" data-feather="corner-up-left"></i>
+									</a>
+									</h5>
+								</div>
+								<p><code>{{$f.File}}</code></p>
+								<table class="table table-hover my-0">
+									<tbody>
+										{{range $p,$info := $f.Lines}}
+										<tr{{if $info.Missed}} class="table-danger"{{end}}>
+											<td style="margin:0px;padding:0px"><code class="text-muted">{{$info.LineNumber}}</code></td>
+											<td style="margin:0px;padding:0px"><code class="text-dark"><pre class="loc">{{$info.Code}}</pre></code>
+										</tr>
+										{{end}}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					{{end}}
+					</div>
 					{{end}}
 				</div>
 			</main>
@@ -330,3 +359,4 @@
 	{{end}}
 </body>
 </html>
+{{end}}

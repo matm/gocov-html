@@ -119,15 +119,20 @@ func render(p *params) error {
 		{&allStyles, p.assets.Stylesheets},
 		{&allScripts, p.assets.Scripts},
 	} {
+		var buf bytes.Buffer
 		for _, asset := range st.assets {
 			raw, err := ioutil.ReadFile(path.Join(baseThemeDir, asset))
 			if err != nil {
 				return err
 			}
-			// Write a slice of bytes to deal with any invalid character.
-			// Later converted to a string before template rendering.
-			fmt.Fprintf(st.buf, "%#v", raw)
+			_, err = buf.Write(raw)
+			if err != nil {
+				return err
+			}
 		}
+		// Write a slice of bytes to deal with any invalid character.
+		// Later converted to a string before template rendering.
+		fmt.Fprintf(st.buf, "%#v", buf.Bytes())
 	}
 	t, err := template.New("").Parse(tmpl)
 	if err != nil {

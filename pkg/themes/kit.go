@@ -10,9 +10,15 @@ type kitTheme struct{}
 
 func (t kitTheme) Assets() types.StaticAssets {
 	return types.StaticAssets{
-		Stylesheets: []string{"app.css"},
-		Scripts:     []string{"app.js"},
-		Index:       "index.html",
+		Stylesheets: []string{
+			// From the official theme.
+			"app.css",
+			//"a.css", "b.css",
+			// Custom rules.
+			"kit.css",
+		},
+		Scripts: []string{"app.js"},
+		Index:   "index.html",
 	}
 }
 
