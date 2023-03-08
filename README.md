@@ -2,15 +2,15 @@
 
 This is a simple helper tool for generating HTML output from [axw/gocov](https://github.com/axw/gocov/).
 
-`gocov-html` has support for themes, [here are some screenshots](themes/README.md).
+`gocov-html` has support for themes, you might want to have a [look at the screenshots](themes/README.md).
 
 ## Installation
 
 Binaries for most amd64 systems are built for every release. Please just [grab a binary version of the latest release](https://github.com/matm/gocov-html/releases).
 
-However you can build it from source. Please note that building from source requires Go 1.11+.
+You can also build it from source. In this case, a working Go 1.11+ compiler is required.
 
-The easiest way to compile it is to fetch the repository's code and run `make` (which defaults to using the `build` target):
+The easiest way to compile this tool is to fetch the repository's code and run `make` (which defaults to using the `build` target):
 ```bash
 $ git clone https://github.com/matm/gocov-html.git
 $ cd gocov-html
