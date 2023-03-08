@@ -2,9 +2,7 @@
 
 This is a simple helper tool for generating HTML output from [axw/gocov](https://github.com/axw/gocov/)
 
-Here is a screenshot:
-
-![HTML coverage report screenshot](https://github.com/matm/gocov-html/blob/master/gocovh-html.png)
+`gocov-html` has support for themes, [here are some screenshots](themes/README.md).
 
 ## Installation
 
