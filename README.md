@@ -8,13 +8,10 @@ This is a simple helper tool for generating HTML output from [axw/gocov](https:/
 
 Binaries for most amd64 systems are built for every release. Please just [grab a binary version of the latest release](https://github.com/matm/gocov-html/releases).
 
-You can also build it from source. In this case, a working Go 1.11+ compiler is required.
+You can also build it from source. In this case, a working Go 1.11+ compiler is required:
 
-The easiest way to compile this tool is to fetch the repository's code and run `make` (which defaults to using the `build` target):
 ```bash
-$ git clone https://github.com/matm/gocov-html.git
-$ cd gocov-html
-$ make
+$ go install github.com/matm/gocov-html/cmd/gocov-html@latest
 ```
 
 A [Dockerfile](Dockerfile) is also provided.
@@ -30,7 +27,7 @@ Embbed custom CSS into final HTML document|-|`1.2.0`
 List available themes|`-lt`|`1.2.0`
 Render with a specific theme|`-t <theme>`|`1.2.0`
 New `kit` theme |`-t kit`|`1.3.0`
-Put lower coverage functions on top|`-r`|`1.4.0`
+Put lower coverage functions on top|`-r`|`1.3.1`
 
 ## Usage
 

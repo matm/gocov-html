@@ -1,4 +1,5 @@
-v 1.4.0
+v 1.3.1
+  - Version the generated files and restore the go install command. #47
   - Add reverse order CLI flag. #41
   - Add a tiny Dockerfile showing the build instructions. #44
 
