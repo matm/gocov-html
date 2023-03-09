@@ -4,3 +4,5 @@
 /*.css
 // Generated Go files
 *_gen.go
+/build
+/dist

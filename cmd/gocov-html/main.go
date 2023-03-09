@@ -42,6 +42,7 @@ func main() {
 	showDefaultCSS := flag.Bool("d", false, "output CSS of default theme")
 	listThemes := flag.Bool("lt", false, "list available themes")
 	theme := flag.String("t", "golang", "theme to use for rendering")
+	reverseOrder := flag.Bool("r", false, "put lower coverage functions on top")
 
 	flag.Parse()
 
@@ -84,7 +85,7 @@ func main() {
 		log.Fatalf("Usage: %s data.json\n", os.Args[0])
 	}
 
-	if err := cov.HTMLReportCoverage(r, *css); err != nil {
+	if err := cov.HTMLReportCoverage(r, *reverseOrder, *css); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -1,4 +1,5 @@
 v 1.4.0
+  - Add reverse order CLI flag. #41
   - Add a tiny Dockerfile showing the build instructions. #44
 
 v 1.3.0
