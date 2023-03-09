@@ -30,6 +30,7 @@ Embbed custom CSS into final HTML document|-|`1.2.0`
 List available themes|`-lt`|`1.2.0`
 Render with a specific theme|`-t <theme>`|`1.2.0`
 New `kit` theme |`-t kit`|`1.3.0`
+Put lower coverage functions on top|`-r`|`1.4.0`
 
 ## Usage
 
