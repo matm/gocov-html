@@ -80,5 +80,4 @@ test:
 	@go test ./...
 
 clean:
-	@find pkg -name \*_gen.go -delete
 	@rm -rf ${BIN} ${GENERATOR_BIN} ${BUILDDIR} ${DISTDIR}
