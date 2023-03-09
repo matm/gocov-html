@@ -1,9 +1,12 @@
-v 1.3
+v 1.4.0
+  - Add a tiny Dockerfile showing the build instructions. #44
+
+v 1.3.0
   - New kit theme. #28
   - refac: generate Go code to render themes. #38
   - doc: fix semver in README. #36
 
-v 1.2
+v 1.2.0
   - Makefile: fix missing version info during build. #33
   - Provide binaries for a variety of os/arch. #31
   - Add support for themes. #24

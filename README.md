@@ -17,6 +17,8 @@ $ cd gocov-html
 $ make
 ```
 
+A [Dockerfile](Dockerfile) is also provided.
+
 ## Features Matrix
 
 Feature|CLI Flag|Version
