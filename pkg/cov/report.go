@@ -21,6 +21,7 @@
 package cov
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -112,7 +113,18 @@ func printReport(w io.Writer, lowCoverageOnTop bool, r *report) error {
 	theme := themes.Current()
 	data := theme.Data()
 
-	css := data.Style
+	// Base64 decoding of style data and script.
+	s, err := base64.StdEncoding.DecodeString(data.Style)
+	if err != nil {
+		return eris.Wrap(err, "decode style")
+	}
+	css := string(s)
+	// Decode the script also.
+	sc, err := base64.StdEncoding.DecodeString(data.Script)
+	if err != nil {
+		return eris.Wrap(err, "decode script")
+	}
+
 	if len(r.stylesheet) > 0 {
 		// Inline CSS.
 		f, err := os.Open(r.stylesheet)
@@ -132,6 +144,7 @@ func printReport(w io.Writer, lowCoverageOnTop bool, r *report) error {
 		pkgNames[i] = pkg.Name
 	}
 
+	data.Script = string(sc)
 	data.Style = css
 	data.Packages = reportPackages
 	data.Command = fmt.Sprintf("gocov test %s | gocov-html -t %s", strings.Join(pkgNames, " "), theme.Name())
@@ -146,7 +159,7 @@ func printReport(w io.Writer, lowCoverageOnTop bool, r *report) error {
 		}
 		data.Overview = &rv
 	}
-	err := theme.Template().Execute(w, data)
+	err = theme.Template().Execute(w, data)
 	return eris.Wrap(err, "execute template")
 }
 
