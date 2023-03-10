@@ -1,3 +1,6 @@
+v 1.4.0
+  - refac: faster and cleaner code generator. #52
+
 v 1.3.1
   - Fix clean target in Makefile. #49
   - Version the generated files and restore the go install command. #47

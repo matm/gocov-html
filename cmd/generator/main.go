@@ -2,10 +2,12 @@ package main
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -33,10 +35,10 @@ func (t {{.Type}}) Data() *types.TemplateData {
 		ProjectURL: types.ProjectURL,
 	}
 	{{if .Style}}
-	td.Style = string({{.Style}})
+	td.Style = "{{.Style}}"
 	{{end}}
 	{{if .Script}}
-	td.Script = string({{.Script}})
+	td.Script = "{{.Script}}"
 	{{end}}
 	return td
 }
@@ -121,18 +123,18 @@ func render(p *params) error {
 	} {
 		var buf bytes.Buffer
 		for _, asset := range st.assets {
-			raw, err := ioutil.ReadFile(path.Join(baseThemeDir, asset))
+			f, err := os.Open(path.Join(baseThemeDir, asset))
 			if err != nil {
 				return err
 			}
-			_, err = buf.Write(raw)
+			defer f.Close()
+			_, err = io.Copy(&buf, f)
 			if err != nil {
 				return err
 			}
 		}
-		// Write a slice of bytes to deal with any invalid character.
-		// Later converted to a string before template rendering.
-		fmt.Fprintf(st.buf, "%#v", buf.Bytes())
+		// Encode in base64 instead to prevent any invalid character escaping issues.
+		fmt.Fprint(st.buf, base64.StdEncoding.EncodeToString(buf.Bytes()))
 	}
 	t, err := template.New("").Parse(tmpl)
 	if err != nil {
