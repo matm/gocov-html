@@ -83,3 +83,14 @@ As of version 1.2,
     ```
     $ gocov test io | gocov-html -t golang > io.html
     ```
+
+## Donate
+
+If you like this tool and want to support its development, a donation would be greatly appreciated!
+
+It's not about the amount at all: making a donation boosts the motivation to work on a project. Thank you very much if you can give anything.
+
+Monero address:
+`86S43wMDNPgNeUd6MkPEpiPUbBM6dS6DGdXBzc34uSw3Lxyg9p5tjmuGHESwmza3wGKfP2njUQdEd6kE3YPFRuaJFzP4Ger`
+
+![My monero address](res/qr-donate.png)
