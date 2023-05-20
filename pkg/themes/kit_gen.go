@@ -242,6 +242,9 @@ func (t kitTheme) Template() *template.Template {
 						<div class="col-6 text-end">
 							<ul class="list-inline">
 								<li class="list-inline-item">
+									<a class="text-muted" href="{{.ProjectURL}}#donate" target="_blank">Donate!</a>
+								</li>
+								<li class="list-inline-item">
 									<a class="text-muted" href="{{.ProjectURL}}" target="_blank">GitHub</a>
 								</li>
 							</ul>
