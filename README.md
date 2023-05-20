@@ -28,15 +28,21 @@ List available themes|`-lt`|`1.2.0`
 Render with a specific theme|`-t <theme>`|`1.2.0`
 New `kit` theme |`-t kit`|`1.3.0`
 Put lower coverage functions on top|`-r`|`1.3.1`
+Only show functions whose coverage is smaller than a max threshold|`-cmax`|`1.4.0`
+Only show functions whose coverage is greater than a min threshold|`-cmin`|`1.4.0`
 
 ## Usage
 
 ```
-$ gocov-html -h
-Usage of ./gocov-html:
+Usage of gocov-html:
+  -cmax uint
+        only show functions whose coverage is less than cmax (default 100)
+  -cmin uint
+        only show functions whose coverage is more than cmin
   -d    output CSS of default theme
   -lt
         list available themes
+  -r    put lower coverage functions on top
   -s string
         path to custom CSS file
   -t string
@@ -44,13 +50,15 @@ Usage of ./gocov-html:
   -v    show program version
 ```
 
-`gocov-html` can read a JSON file or read from standard input:
+## Examples
+
+Generate code coverage for the `strings` package then generate an HTML report:
 ```
 $ gocov test strings | gocov-html > strings.html
 ok      strings 0.700s  coverage: 98.1% of statements
 ```
 
-Several packages can be tested at once and added to a single report. Let's test the `fmt`, `math` and `io` packages:
+Merge several coverage stats for different packages into a single report:
 ```
 $ gocov test fmt math io | gocov-html > report.html
 ok      fmt     0.045s  coverage: 95.2% of statements
@@ -60,29 +68,25 @@ ok      io      0.024s  coverage: 88.2% of statements
 
 In this case, the generated report will have an *overview* section with stats per package along with the global coverage percentage. This section may be rendered depending on the theme used. The `golang` (default) theme displays it.
 
-The generated HTML content comes along with a default embedded CSS. However a custom stylesheet can be used with the `-s` flag:
+List all available themes:
 ```
-$ gocov test net/http | gocov-html -s mystyle.css > http.html
+$ gocov-html -lt
+golang     -- original golang theme (default)
+kit        -- AdminKit theme
 ```
 
-As of version 1.2,
-- A `-d` flag is available to write the defaut stylesheet to the standard output. This is provided for convenience and easy editing:
-  ```
-  $ gocov-html -d > newstyle.css
-  ... edit newstyle.css ...
-  $ gocov test strings | gocov-html -s newstyle.css > http.html
-  ```
-- The content of the stylesheet given to `-s` is embedded into the final HTML document
-- Theming capabilities are available (to go further than just using a CSS file) through the use of Go templates.
-  - Use the `-lt` flag to list available themes:
-    ```
-    $ gocov-html -lt
-    golang     -- original golang theme (default)
-    ```
-  - Generate a report using a specific theme with `-t`:
-    ```
-    $ gocov test io | gocov-html -t golang > io.html
-    ```
+Generate a report using a specific theme with `-t`:
+```
+$ gocov test io | gocov-html -t kit > io.html
+```
+
+Only show functions whose code coverage is lower than 90% for the `strings` package:
+```
+$ gocov test strings|./gocov-html -cmax 90 > strings.html
+```
+In this example, there are only 5 matches added to the report.
+
+
 
 ## Donate
 

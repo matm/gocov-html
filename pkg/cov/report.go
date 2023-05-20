@@ -111,7 +111,7 @@ func buildReportPackage(pkg *gocov.Package, r *report) types.ReportPackage {
 		}
 		rf := types.ReportFunction{Function: fn, StatementsReached: reached}
 		covp := rf.CoveragePercent()
-		if covp > float64(r.CoverageMin) && covp < float64(r.CoverageMax) {
+		if covp >= float64(r.CoverageMin) && covp <= float64(r.CoverageMax) {
 			rv.Functions = append(rv.Functions, rf)
 		}
 		rv.TotalStatements += len(fn.Statements)
