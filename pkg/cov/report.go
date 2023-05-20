@@ -48,8 +48,6 @@ type ReportOptions struct {
 	CoverageMin uint8
 	// CoverageMax filters out all functions whose code coverage is greater than it is.
 	CoverageMax uint8
-	// command list arguments.
-	cliArgs string
 }
 
 type report struct {
