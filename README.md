@@ -84,9 +84,7 @@ Only show functions whose code coverage is lower than 90% for the `strings` pack
 ```
 $ gocov test strings|./gocov-html -cmax 90 > strings.html
 ```
-In this example, there are only 5 matches added to the report.
-
-
+In this example, only 5 matches are added to the report.
 
 ## Donate
 
