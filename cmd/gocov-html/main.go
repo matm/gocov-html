@@ -43,6 +43,8 @@ func main() {
 	listThemes := flag.Bool("lt", false, "list available themes")
 	theme := flag.String("t", "golang", "theme to use for rendering")
 	reverseOrder := flag.Bool("r", false, "put lower coverage functions on top")
+	maxCoverage := flag.Uint64("cmax", 100, "only show functions whose coverage is less than cmax")
+	minCoverage := flag.Uint64("cmin", 0, "only show functions whose coverage is more than cmin")
 
 	flag.Parse()
 
@@ -61,6 +63,10 @@ func main() {
 			fmt.Printf("%-10s -- %s\n", th.Name(), th.Description())
 		}
 		return
+	}
+
+	if *minCoverage > *maxCoverage {
+		log.Fatal("error: empty report if cmin > cmax, please use a smaller cmin value.")
 	}
 
 	err := themes.Use(*theme)
@@ -85,7 +91,13 @@ func main() {
 		log.Fatalf("Usage: %s data.json\n", os.Args[0])
 	}
 
-	if err := cov.HTMLReportCoverage(r, *reverseOrder, *css); err != nil {
+	opts := cov.ReportOptions{
+		LowCoverageOnTop: *reverseOrder,
+		Stylesheet:       *css,
+		CoverageMin:      uint8(*minCoverage),
+		CoverageMax:      uint8(*maxCoverage),
+	}
+	if err := cov.HTMLReportCoverage(r, opts); err != nil {
 		log.Fatal(err)
 	}
 }
