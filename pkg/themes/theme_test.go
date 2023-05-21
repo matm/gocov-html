@@ -3,15 +3,13 @@ package themes
 import (
 	"reflect"
 	"testing"
-
-	"github.com/matm/gocov-html/pkg/types"
 )
 
 func TestGet(t *testing.T) {
 	tests := []struct {
 		name  string
 		theme string
-		want  types.Beautifier
+		want  Beautifier
 	}{
 		{"empty string", "", nil},
 		{"unknown", "bad", nil},
@@ -29,9 +27,9 @@ func TestGet(t *testing.T) {
 func TestList(t *testing.T) {
 	tests := []struct {
 		name  string
-		after func([]types.Beautifier)
+		after func([]Beautifier)
 	}{
-		{"all themes", func(ts []types.Beautifier) {
+		{"all themes", func(ts []Beautifier) {
 			if len(ts) == 0 {
 				t.Error("no theme")
 			}

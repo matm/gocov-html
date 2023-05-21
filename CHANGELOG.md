@@ -1,4 +1,6 @@
 v 1.4.0
+  - refac: remove pkg/types package. #51
+  - Add CLI support for coverage thresholds. #43
   - refac: faster and cleaner code generator. #52
 
 v 1.3.1

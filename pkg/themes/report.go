@@ -1,39 +1,20 @@
-// Copyright (c) 2012 The Gocov Authors.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to
-// deal in the Software without restriction, including without limitation the
-// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-// sell copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-// IN THE SOFTWARE.
-
-package cov
+package themes
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"go/token"
+	"html"
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"time"
 
 	"github.com/axw/gocov"
-	"github.com/matm/gocov-html/pkg/themes"
-	"github.com/matm/gocov-html/pkg/types"
 	"github.com/rotisserie/eris"
 )
 
@@ -97,10 +78,10 @@ func (r *report) clear() {
 	r.packages = nil
 }
 
-func buildReportPackage(pkg *gocov.Package, r *report) types.ReportPackage {
-	rv := types.ReportPackage{
+func buildReportPackage(pkg *gocov.Package, r *report) reportPackage {
+	rv := reportPackage{
 		Pkg:       pkg,
-		Functions: make(types.ReportFunctionList, 0),
+		Functions: make(reportFunctionList, 0),
 	}
 	for _, fn := range pkg.Functions {
 		reached := 0
@@ -109,7 +90,7 @@ func buildReportPackage(pkg *gocov.Package, r *report) types.ReportPackage {
 				reached++
 			}
 		}
-		rf := types.ReportFunction{Function: fn, StatementsReached: reached}
+		rf := reportFunction{Function: fn, StatementsReached: reached}
 		covp := rf.CoveragePercent()
 		if covp >= float64(r.CoverageMin) && covp <= float64(r.CoverageMax) {
 			rv.Functions = append(rv.Functions, rf)
@@ -127,8 +108,7 @@ func buildReportPackage(pkg *gocov.Package, r *report) types.ReportPackage {
 
 // printReport prints a coverage report to the given writer.
 func printReport(w io.Writer, r *report) error {
-	theme := themes.Current()
-	data := theme.Data()
+	data := curTheme.Data()
 
 	// Base64 decoding of style data and script.
 	s, err := base64.StdEncoding.DecodeString(data.Style)
@@ -154,7 +134,7 @@ func printReport(w io.Writer, r *report) error {
 		}
 		css = string(style)
 	}
-	reportPackages := make(types.ReportPackageList, len(r.packages))
+	reportPackages := make(reportPackageList, len(r.packages))
 	pkgNames := make([]string, len(r.packages))
 	for i, pkg := range r.packages {
 		reportPackages[i] = buildReportPackage(pkg, r)
@@ -170,7 +150,7 @@ func printReport(w io.Writer, r *report) error {
 	)
 
 	if len(reportPackages) > 1 {
-		rv := types.ReportPackage{
+		rv := reportPackage{
 			Pkg: &gocov.Package{Name: "Report Total"},
 		}
 		for _, rp := range reportPackages {
@@ -179,7 +159,7 @@ func printReport(w io.Writer, r *report) error {
 		}
 		data.Overview = &rv
 	}
-	err = theme.Template().Execute(w, data)
+	err = curTheme.Template().Execute(w, data)
 	return eris.Wrap(err, "execute template")
 }
 
@@ -226,4 +206,155 @@ func HTMLReportCoverage(r io.Reader, opts ReportOptions) error {
 	err = printReport(os.Stdout, report)
 	fmt.Fprintf(os.Stderr, "Took %v\n", time.Since(t0))
 	return eris.Wrap(err, "HTML report")
+}
+
+// ProjectURL is the project's site on GitHub.
+const ProjectURL = "https://github.com/matm/gocov-html"
+
+const (
+	hitPrefix  = "    "
+	missPrefix = "MISS"
+)
+
+type reportPackageList []reportPackage
+
+type reportPackage struct {
+	Pkg               *gocov.Package
+	Functions         reportFunctionList
+	TotalStatements   int
+	ReachedStatements int
+}
+
+// PercentageReached computes the percentage of reached statements by the tests
+// for a package.
+func (rp *reportPackage) PercentageReached() float64 {
+	var rv float64
+	if rp.TotalStatements > 0 {
+		rv = float64(rp.ReachedStatements) / float64(rp.TotalStatements) * 100
+	}
+	return rv
+}
+
+// reportFunction is a gocov Function with some added stats.
+type reportFunction struct {
+	*gocov.Function
+	StatementsReached int
+}
+
+// functionLine holds the line of code, its line number in the source file
+// and whether the tests reached it.
+type functionLine struct {
+	Code       string
+	LineNumber int
+	Missed     bool
+}
+
+// CoveragePercent is the percentage of code coverage for a function. Returns 100
+// if the function has no statement.
+func (f reportFunction) CoveragePercent() float64 {
+	reached := f.StatementsReached
+	var stmtPercent float64 = 0
+	if len(f.Statements) > 0 {
+		stmtPercent = float64(reached) / float64(len(f.Statements)) * 100
+	} else if len(f.Statements) == 0 {
+		stmtPercent = 100
+	}
+	return stmtPercent
+}
+
+// ShortFileName returns the base path of the function's file name. Provided for
+// convenience to be used in the HTML template of the theme.
+func (f reportFunction) ShortFileName() string {
+	return filepath.Base(f.File)
+}
+
+// Lines returns information about all a function's Lines of code.
+func (f reportFunction) Lines() []functionLine {
+	type annotator struct {
+		fset  *token.FileSet
+		files map[string]*token.File
+	}
+	a := &annotator{}
+	a.fset = token.NewFileSet()
+	a.files = make(map[string]*token.File)
+
+	// Load the file for line information. Probably overkill, maybe
+	// just compute the lines from offsets in here.
+	setContent := false
+	file := a.files[f.File]
+	if file == nil {
+		info, err := os.Stat(f.File)
+		if err != nil {
+			panic(err)
+		}
+		file = a.fset.AddFile(f.File, a.fset.Base(), int(info.Size()))
+		setContent = true
+	}
+
+	data, err := ioutil.ReadFile(f.File)
+	if err != nil {
+		panic(err)
+	}
+
+	if setContent {
+		// This processes the content and records line number info.
+		file.SetLinesForContent(data)
+	}
+
+	statements := f.Statements[:]
+	lineno := file.Line(file.Pos(f.Start))
+	lines := strings.Split(string(data)[f.Start:f.End], "\n")
+	fls := make([]functionLine, len(lines))
+
+	for i, line := range lines {
+		lineno := lineno + i
+		statementFound := false
+		hit := false
+		for j := 0; j < len(statements); j++ {
+			start := file.Line(file.Pos(statements[j].Start))
+			if start == lineno {
+				statementFound = true
+				if !hit && statements[j].Reached > 0 {
+					hit = true
+				}
+				statements = append(statements[:j], statements[j+1:]...)
+			}
+		}
+		hitmiss := hitPrefix
+		if statementFound && !hit {
+			hitmiss = missPrefix
+		}
+		fls[i] = functionLine{
+			Missed:     hitmiss == missPrefix,
+			LineNumber: lineno,
+			Code:       html.EscapeString(strings.Replace(line, "\t", "        ", -1)),
+		}
+	}
+	return fls
+}
+
+// reportFunctionList is a list of functions for a report.
+type reportFunctionList []reportFunction
+
+func (l reportFunctionList) Len() int {
+	return len(l)
+}
+
+// TODO make sort method configurable?
+func (l reportFunctionList) Less(i, j int) bool {
+	var left, right float64
+	if len(l[i].Statements) > 0 {
+		left = float64(l[i].StatementsReached) / float64(len(l[i].Statements))
+	}
+	if len(l[j].Statements) > 0 {
+		right = float64(l[j].StatementsReached) / float64(len(l[j].Statements))
+	}
+	if left < right {
+		return true
+	}
+	return left == right && len(l[i].Statements) < len(l[j].Statements)
+}
+
+func (l reportFunctionList) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
 }
