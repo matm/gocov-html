@@ -23,22 +23,22 @@ type Beautifier interface {
 
 // templateData has all the fields needed by the the HTML template for rendering.
 type templateData struct {
-	// command is the shell command used to generate the HTML report.
-	command string
+	// Command is the shell Command used to generate the HTML report.
+	Command string
 	// Style is the stylesheet content that will be embedded in the HTML page.
 	Style string
-	// script is the javascript content that will be embedded in the HTML page.
-	script string
-	// when is the date time of report generation.
-	when string
-	// overview holds data used for an additional header in case of multiple Go packages
+	// Script is the javascript content that will be embedded in the HTML page.
+	Script string
+	// When is the date time of report generation.
+	When string
+	// Overview holds data used for an additional header in case of multiple Go packages
 	// have been analysed. Can be used for a high level summary. Is nil if the report has
 	// only one package.
-	overview *reportPackage
-	// packages is the list of all Go packages analysed.
-	packages reportPackageList
-	// projectURL is the project's site on GitHub.
-	projectURL string
+	Overview *reportPackage
+	// Packages is the list of all Go Packages analysed.
+	Packages reportPackageList
+	// ProjectURL is the project's site on GitHub.
+	ProjectURL string
 }
 
 // StaticAssets sets all assets required for a theme.

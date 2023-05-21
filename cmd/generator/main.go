@@ -29,14 +29,14 @@ import (
 
 func (t {{.Type}}) Data() *templateData {
 	td:= &templateData{
-		when:       time.Now().Format(time.RFC1123),
-		projectURL: ProjectURL,
+		When:       time.Now().Format(time.RFC1123),
+		ProjectURL: ProjectURL,
 	}
 	{{if .Style}}
 	td.Style = "{{.Style}}"
 	{{end}}
 	{{if .Script}}
-	td.script = "{{.Script}}"
+	td.Script = "{{.Script}}"
 	{{end}}
 	return td
 }
