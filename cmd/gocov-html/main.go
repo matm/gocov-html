@@ -29,7 +29,6 @@ import (
 	"runtime"
 
 	"github.com/matm/gocov-html/pkg/config"
-	"github.com/matm/gocov-html/pkg/cov"
 	"github.com/matm/gocov-html/pkg/themes"
 )
 
@@ -94,13 +93,13 @@ func main() {
 		log.Fatalf("Usage: %s data.json\n", os.Args[0])
 	}
 
-	opts := cov.ReportOptions{
+	opts := themes.ReportOptions{
 		LowCoverageOnTop: *reverseOrder,
 		Stylesheet:       *css,
 		CoverageMin:      uint8(*minCoverage),
 		CoverageMax:      uint8(*maxCoverage),
 	}
-	if err := cov.HTMLReportCoverage(r, opts); err != nil {
+	if err := themes.HTMLReportCoverage(r, opts); err != nil {
 		log.Fatal(err)
 	}
 }

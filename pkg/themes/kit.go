@@ -2,14 +2,10 @@ package themes
 
 //go:generate ../../generator
 
-import (
-	"github.com/matm/gocov-html/pkg/types"
-)
-
 type kitTheme struct{}
 
-func (t kitTheme) Assets() types.StaticAssets {
-	return types.StaticAssets{
+func (t kitTheme) Assets() StaticAssets {
+	return StaticAssets{
 		Stylesheets: []string{
 			// From the official theme.
 			"app.css",
