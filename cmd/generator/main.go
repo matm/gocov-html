@@ -27,16 +27,16 @@ import (
 	"time"
 )
 
-func (t {{.Type}}) Data() *TemplateData {
-	td:= &TemplateData{
-		When:       time.Now().Format(time.RFC1123),
-		ProjectURL: ProjectURL,
+func (t {{.Type}}) Data() *templateData {
+	td:= &templateData{
+		when:       time.Now().Format(time.RFC1123),
+		projectURL: ProjectURL,
 	}
 	{{if .Style}}
 	td.Style = "{{.Style}}"
 	{{end}}
 	{{if .Script}}
-	td.Script = "{{.Script}}"
+	td.script = "{{.Script}}"
 	{{end}}
 	return td
 }

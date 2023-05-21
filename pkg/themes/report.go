@@ -78,10 +78,10 @@ func (r *report) clear() {
 	r.packages = nil
 }
 
-func buildReportPackage(pkg *gocov.Package, r *report) ReportPackage {
-	rv := ReportPackage{
-		Pkg:       pkg,
-		Functions: make(ReportFunctionList, 0),
+func buildReportPackage(pkg *gocov.Package, r *report) reportPackage {
+	rv := reportPackage{
+		pkg:       pkg,
+		functions: make(reportFunctionList, 0),
 	}
 	for _, fn := range pkg.Functions {
 		reached := 0
@@ -90,18 +90,18 @@ func buildReportPackage(pkg *gocov.Package, r *report) ReportPackage {
 				reached++
 			}
 		}
-		rf := ReportFunction{Function: fn, StatementsReached: reached}
-		covp := rf.CoveragePercent()
+		rf := reportFunction{Function: fn, statementsReached: reached}
+		covp := rf.coveragePercent()
 		if covp >= float64(r.CoverageMin) && covp <= float64(r.CoverageMax) {
-			rv.Functions = append(rv.Functions, rf)
+			rv.functions = append(rv.functions, rf)
 		}
-		rv.TotalStatements += len(fn.Statements)
-		rv.ReachedStatements += reached
+		rv.totalStatements += len(fn.Statements)
+		rv.reachedStatements += reached
 	}
 	if r.LowCoverageOnTop {
-		sort.Sort(rv.Functions)
+		sort.Sort(rv.functions)
 	} else {
-		sort.Sort(reverse{rv.Functions})
+		sort.Sort(reverse{rv.functions})
 	}
 	return rv
 }
@@ -117,7 +117,7 @@ func printReport(w io.Writer, r *report) error {
 	}
 	css := string(s)
 	// Decode the script also.
-	sc, err := base64.StdEncoding.DecodeString(data.Script)
+	sc, err := base64.StdEncoding.DecodeString(data.script)
 	if err != nil {
 		return eris.Wrap(err, "decode script")
 	}
@@ -134,30 +134,30 @@ func printReport(w io.Writer, r *report) error {
 		}
 		css = string(style)
 	}
-	reportPackages := make(ReportPackageList, len(r.packages))
+	reportPackages := make(reportPackageList, len(r.packages))
 	pkgNames := make([]string, len(r.packages))
 	for i, pkg := range r.packages {
 		reportPackages[i] = buildReportPackage(pkg, r)
 		pkgNames[i] = pkg.Name
 	}
 
-	data.Script = string(sc)
+	data.script = string(sc)
 	data.Style = css
-	data.Packages = reportPackages
-	data.Command = fmt.Sprintf("gocov test %s | gocov-html %s",
+	data.packages = reportPackages
+	data.command = fmt.Sprintf("gocov test %s | gocov-html %s",
 		strings.Join(pkgNames, " "),
 		strings.Join(os.Args[1:], " "),
 	)
 
 	if len(reportPackages) > 1 {
-		rv := ReportPackage{
-			Pkg: &gocov.Package{Name: "Report Total"},
+		rv := reportPackage{
+			pkg: &gocov.Package{Name: "Report Total"},
 		}
 		for _, rp := range reportPackages {
-			rv.ReachedStatements += rp.ReachedStatements
-			rv.TotalStatements += rp.TotalStatements
+			rv.reachedStatements += rp.reachedStatements
+			rv.totalStatements += rp.totalStatements
 		}
-		data.Overview = &rv
+		data.overview = &rv
 	}
 	err = curTheme.Template().Execute(w, data)
 	return eris.Wrap(err, "execute template")
@@ -216,45 +216,43 @@ const (
 	missPrefix = "MISS"
 )
 
-// ReportPackageList is a list of packages for the report.
-type ReportPackageList []ReportPackage
+type reportPackageList []reportPackage
 
-// ReportPackage holds data about a Go package, its functions and some stats.
-type ReportPackage struct {
-	Pkg               *gocov.Package
-	Functions         ReportFunctionList
-	TotalStatements   int
-	ReachedStatements int
+type reportPackage struct {
+	pkg               *gocov.Package
+	functions         reportFunctionList
+	totalStatements   int
+	reachedStatements int
 }
 
-// PercentageReached computes the percentage of reached statements by the tests
+// percentageReached computes the percentage of reached statements by the tests
 // for a package.
-func (rp *ReportPackage) PercentageReached() float64 {
+func (rp *reportPackage) percentageReached() float64 {
 	var rv float64
-	if rp.TotalStatements > 0 {
-		rv = float64(rp.ReachedStatements) / float64(rp.TotalStatements) * 100
+	if rp.totalStatements > 0 {
+		rv = float64(rp.reachedStatements) / float64(rp.totalStatements) * 100
 	}
 	return rv
 }
 
-// ReportFunction is a gocov Function with some added stats.
-type ReportFunction struct {
+// reportFunction is a gocov Function with some added stats.
+type reportFunction struct {
 	*gocov.Function
-	StatementsReached int
+	statementsReached int
 }
 
-// FunctionLine holds the line of code, its line number in the source file
+// functionLine holds the line of code, its line number in the source file
 // and whether the tests reached it.
-type FunctionLine struct {
-	Code       string
-	LineNumber int
-	Missed     bool
+type functionLine struct {
+	code       string
+	lineNumber int
+	missed     bool
 }
 
-// CoveragePercent is the percentage of code coverage for a function. Returns 100
+// coveragePercent is the percentage of code coverage for a function. Returns 100
 // if the function has no statement.
-func (f ReportFunction) CoveragePercent() float64 {
-	reached := f.StatementsReached
+func (f reportFunction) coveragePercent() float64 {
+	reached := f.statementsReached
 	var stmtPercent float64 = 0
 	if len(f.Statements) > 0 {
 		stmtPercent = float64(reached) / float64(len(f.Statements)) * 100
@@ -264,14 +262,14 @@ func (f ReportFunction) CoveragePercent() float64 {
 	return stmtPercent
 }
 
-// ShortFileName returns the base path of the function's file name. Provided for
+// shortFileName returns the base path of the function's file name. Provided for
 // convenience to be used in the HTML template of the theme.
-func (f ReportFunction) ShortFileName() string {
+func (f reportFunction) shortFileName() string {
 	return filepath.Base(f.File)
 }
 
-// Lines returns information about all a function's lines of code.
-func (f ReportFunction) Lines() []FunctionLine {
+// lines returns information about all a function's lines of code.
+func (f reportFunction) lines() []functionLine {
 	type annotator struct {
 		fset  *token.FileSet
 		files map[string]*token.File
@@ -306,7 +304,7 @@ func (f ReportFunction) Lines() []FunctionLine {
 	statements := f.Statements[:]
 	lineno := file.Line(file.Pos(f.Start))
 	lines := strings.Split(string(data)[f.Start:f.End], "\n")
-	fls := make([]FunctionLine, len(lines))
+	fls := make([]functionLine, len(lines))
 
 	for i, line := range lines {
 		lineno := lineno + i
@@ -326,30 +324,30 @@ func (f ReportFunction) Lines() []FunctionLine {
 		if statementFound && !hit {
 			hitmiss = missPrefix
 		}
-		fls[i] = FunctionLine{
-			Missed:     hitmiss == missPrefix,
-			LineNumber: lineno,
-			Code:       html.EscapeString(strings.Replace(line, "\t", "        ", -1)),
+		fls[i] = functionLine{
+			missed:     hitmiss == missPrefix,
+			lineNumber: lineno,
+			code:       html.EscapeString(strings.Replace(line, "\t", "        ", -1)),
 		}
 	}
 	return fls
 }
 
-// ReportFunctionList is a list of functions for a report.
-type ReportFunctionList []ReportFunction
+// reportFunctionList is a list of functions for a report.
+type reportFunctionList []reportFunction
 
-func (l ReportFunctionList) Len() int {
+func (l reportFunctionList) Len() int {
 	return len(l)
 }
 
 // TODO make sort method configurable?
-func (l ReportFunctionList) Less(i, j int) bool {
+func (l reportFunctionList) Less(i, j int) bool {
 	var left, right float64
 	if len(l[i].Statements) > 0 {
-		left = float64(l[i].StatementsReached) / float64(len(l[i].Statements))
+		left = float64(l[i].statementsReached) / float64(len(l[i].Statements))
 	}
 	if len(l[j].Statements) > 0 {
-		right = float64(l[j].StatementsReached) / float64(len(l[j].Statements))
+		right = float64(l[j].statementsReached) / float64(len(l[j].Statements))
 	}
 	if left < right {
 		return true
@@ -357,6 +355,6 @@ func (l ReportFunctionList) Less(i, j int) bool {
 	return left == right && len(l[i].Statements) < len(l[j].Statements)
 }
 
-func (l ReportFunctionList) Swap(i, j int) {
+func (l reportFunctionList) Swap(i, j int) {
 	l[i], l[j] = l[j], l[i]
 }
