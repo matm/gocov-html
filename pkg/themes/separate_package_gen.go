@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (t defaultTheme) Data() *templateData {
+func (t separatePackageTheme) Data() *templateData {
 	td := &templateData{
 		When:       time.Now().Format(time.RFC1123),
 		ProjectURL: ProjectURL,
@@ -18,7 +18,7 @@ func (t defaultTheme) Data() *templateData {
 	return td
 }
 
-func (t defaultTheme) Template() *template.Template {
+func (t separatePackageTheme) Template() *template.Template {
 	tmpl := `{{define "theme"}}
 <html>
 	<head>
@@ -42,7 +42,7 @@ func (t defaultTheme) Template() *template.Template {
             <table class="overview">
             {{range $k,$rp := .Packages}}
             <tr id="s_pkg_{{$rp.Pkg.Name}}">
-                <td><code><a href="#pkg_{{$rp.Pkg.Name}}">{{$rp.Pkg.Name}}</a></code></td>
+                <td><code><a href="{{$rp.Pkg.Name}}.html">{{$rp.Pkg.Name}}</a></code></td>
                 <td class="percent"><code>{{printf "%.1f%%" $rp.PercentageReached}}</code></td>
                 <td class="linecount"><code>{{printf "%d" $rp.ReachedStatements}}/{{printf "%d" $rp.TotalStatements}}</code></td>
             </tr>
@@ -54,55 +54,6 @@ func (t defaultTheme) Template() *template.Template {
             <pre class="cmd">{{.Command}}</pre>
         </div>
         {{end}}
-        {{range $k,$rp := .Packages}}
-        <div id="pkg_{{$rp.Pkg.Name}}" class="funcname">
-            Package Overview: {{$rp.Pkg.Name}}
-            <span class="packageTotal">{{printf "%.1f%%" $rp.PercentageReached}}</span>
-        </div>
-        <p>Please select a function to see what's left for testing.</p>
-
-        <table class="overview">
-        {{range $k,$f := $rp.Functions}}
-            <tr id="s_fn_{{$f.Name}}">
-                <td>
-                    <code><a href="#fn_{{$f.Name}}">{{$f.Name}}(...)</a></code>
-                </td>
-                <td>
-                    <code>{{$rp.Pkg.Name}}/{{$f.ShortFileName}}</code>
-                </td>
-                <td class="percent">
-                    <code>{{printf "%.1f%%" $f.CoveragePercent}}</code>
-                </td>
-                <td class="linecount">
-                    <code>{{$f.StatementsReached}}/{{len $f.Statements}}</code>
-                </td>
-            </tr>
-        {{end}}
-        </table>
-
-        {{/* Functions source code here */}}
-        {{range $k,$f := $rp.Functions}}
-        <div class="funcname" id="fn_{{$f.Name}}">func {{$f.Name}}</div>
-        <div class="info">
-            <a href="#s_fn_{{$f.Name}}">Back</a>
-            <p>In <code>{{$f.File}}</code>:</p>
-        </div>
-        <table class="listing">
-            {{range $p,$info := $f.Lines}}
-            <tr{{if $info.Missed}} class="miss"{{end}}>
-                <td>{{$info.LineNumber}}</td>
-                <td>
-                    <code><pre>{{$info.Code}}</pre></code>
-                </td>
-            </tr>
-            {{end}}
-        </table>
-        {{end}} {{/* range function lines */}}
-
-        <!--    Can be parsed by external script
-                PACKAGE:{{$rp.Pkg.Name}} DONE:{{printf "%.1f" $rp.PercentageReached}}
-        -->
-        {{end}} {{/* range Packages end */}}
 
         <div id="summaryWrapper">
         {{if not .Overview}}
@@ -127,6 +78,75 @@ func (t defaultTheme) Template() *template.Template {
 	return p
 }
 
-func (t defaultTheme) PackageTemplate() *template.Template {
-	return nil
+func (t separatePackageTheme) PackageTemplate() *template.Template {
+	tmpl := `{{define "theme"}}
+<html>
+	<head>
+		<title>Coverage Report</title>
+		<meta charset="utf-8" />
+        {{if .Style}}
+        <style type="text/css">
+        {{.Style}}
+        </style>
+        {{end}}
+	</head>
+	<body>
+		<div id="doctitle">Package Coverage Report</div>
+        {{if not .Pkg}}
+		<p>no test files in package.</p>"
+        {{else}}
+        <div id="about">Generated on {{.When}} with <a href="{{.ProjectURL}}">gocov-html</a></div>
+
+        <div id="pkg_{{.Pkg.Name}}" class="funcname">
+            Package Overview: {{.Pkg.Name}}
+            <span class="packageTotal">{{printf "%.1f%%" .ReachedPercentage}}</span>
+        </div>
+        <p>Please select a function to see what's left for testing.</p>
+
+        <table class="overview">
+        {{range $k,$f := .Functions}}
+            <tr id="s_fn_{{$f.Name}}">
+                <td>
+                    <code><a href="#fn_{{$f.Name}}">{{$f.Name}}(...)</a></code>
+                </td>
+                <td>
+                    <code>{{.Pkg.Name}}/{{$f.ShortFileName}}</code>
+                </td>
+                <td class="percent">
+                    <code>{{printf "%.1f%%" $f.CoveragePercent}}</code>
+                </td>
+                <td class="linecount">
+                    <code>{{$f.StatementsReached}}/{{len $f.Statements}}</code>
+                </td>
+            </tr>
+        {{end}}
+        </table>
+
+        {{/* Functions source code here */}}
+        {{range $k,$f := .Functions}}
+        <div class="funcname" id="fn_{{$f.Name}}">func {{$f.Name}}</div>
+        <div class="info">
+            <a href="#s_fn_{{$f.Name}}">Back</a>
+            <p>In <code>{{$f.File}}</code>:</p>
+        </div>
+        <table class="listing">
+            {{range $p,$info := $f.Lines}}
+            <tr{{if $info.Missed}} class="miss"{{end}}>
+                <td>{{$info.LineNumber}}</td>
+                <td>
+                    <code><pre>{{$info.Code}}</pre></code>
+                </td>
+            </tr>
+            {{end}}
+        </table>
+        {{end}} {{/* range function lines */}}
+
+        <!--    Can be parsed by external script
+                PACKAGE:{{.Pkg.Name}} DONE:{{printf "%.1f" .ReachedPercentage}}
+        -->
+	</body>
+</html>
+{{end}}`
+	p := template.Must(template.New("theme").Parse(tmpl))
+	return p
 }
