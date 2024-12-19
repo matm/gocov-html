@@ -21,14 +21,29 @@ import (
 // ReportOptions holds various options used when generating the final
 // HTML report.
 type ReportOptions struct {
-	// LowCoverageOnTop puts low coverage functions first.
-	LowCoverageOnTop bool
+	// SortOrder decides how to sort functions
+	SortOrder SortOrder
 	// Stylesheet is the path to a custom CSS file.
 	Stylesheet string
 	// CoverageMin filters out all functions whose code coverage is smaller than it is.
 	CoverageMin uint8
 	// CoverageMax filters out all functions whose code coverage is greater than it is.
 	CoverageMax uint8
+}
+
+type SortOrder string
+
+const SortOrderHighCoverage SortOrder = "high-coverage"
+const SortOrderLowCoverage SortOrder = "low-coverage"
+const SortOrderLocation SortOrder = "location"
+
+func (so SortOrder) Valid() bool {
+	switch so {
+	case SortOrderHighCoverage, SortOrderLowCoverage, SortOrderLocation:
+		return true
+	default:
+		return false
+	}
 }
 
 type report struct {
@@ -43,14 +58,6 @@ func unmarshalJSON(data []byte) (packages []*gocov.Package, err error) {
 		packages = result.Packages
 	}
 	return
-}
-
-type reverse struct {
-	sort.Interface
-}
-
-func (r reverse) Less(i, j int) bool {
-	return r.Interface.Less(j, i)
 }
 
 // NewReport creates a new report.
@@ -98,10 +105,13 @@ func buildReportPackage(pkg *gocov.Package, r *report) reportPackage {
 		rv.TotalStatements += len(fn.Statements)
 		rv.ReachedStatements += reached
 	}
-	if r.LowCoverageOnTop {
+	switch r.SortOrder {
+	case SortOrderHighCoverage:
 		sort.Sort(rv.Functions)
-	} else {
-		sort.Sort(reverse{rv.Functions})
+	case SortOrderLowCoverage:
+		sort.Sort(sort.Reverse(rv.Functions))
+	case SortOrderLocation:
+		sort.Sort(locationOrderedFunctionList(rv.Functions))
 	}
 	return rv
 }
@@ -331,6 +341,23 @@ func (f reportFunction) Lines() []functionLine {
 		}
 	}
 	return fls
+}
+
+type locationOrderedFunctionList reportFunctionList
+
+func (l locationOrderedFunctionList) Len() int {
+	return len(l)
+}
+
+func (l locationOrderedFunctionList) Less(i, j int) bool {
+	if l[i].File == l[j].File {
+		return l[i].Start < l[j].Start
+	}
+	return l[i].File < l[j].File
+}
+
+func (l locationOrderedFunctionList) Swap(i, j int) {
+	l[i], l[j] = l[j], l[i]
 }
 
 // reportFunctionList is a list of functions for a report.
