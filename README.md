@@ -1,5 +1,7 @@
 # Gocov HTML export
 
+[![go-recipes](https://raw.githubusercontent.com/nikolaydubina/go-recipes/main/badge.svg?raw=true)](https://github.com/nikolaydubina/go-recipes)
+
 This is a simple helper tool for generating HTML output from [axw/gocov](https://github.com/axw/gocov/).
 
 `gocov-html` has support for themes, you might want to have a [look at the screenshots](themes/README.md).
